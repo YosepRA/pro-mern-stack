@@ -1,0 +1,27 @@
+{
+  "name": "pro-mern-stack",
+  "version": "1.0.0",
+  "description": "Pro MERN Stack - Vasan Subramanian.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YosepRA/pro-mern-stack.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YosepRA/pro-mern-stack/issues"
+  },
+  "homepage": "https://github.com/YosepRA/pro-mern-stack#readme",
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.15.0",
+    "eslint-config-prettier": "^7.0.0",
+    "eslint-plugin-prettier": "^3.3.0",
+    "eslint-plugin-react": "^7.21.5",
+    "prettier": "^2.2.1"
+  }
+}
