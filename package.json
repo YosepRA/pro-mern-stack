@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/YosepRA/pro-mern-stack#readme",
   "devDependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
+    "@babel/preset-react": "^7.12.10",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.15.0",
     "eslint-config-prettier": "^7.0.0",
