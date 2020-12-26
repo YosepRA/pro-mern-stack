@@ -19,22 +19,20 @@ const initialIssues = [
   },
 ];
 
-class IssueRow extends React.Component {
-  render() {
-    const issue = this.props.issue;
+function IssueRow(props) {
+  const issue = props.issue;
 
-    return (
-      <tr>
-        <td>{issue.id}</td>
-        <td>{issue.status}</td>
-        <td>{issue.owner}</td>
-        <td>{issue.created.toDateString()}</td>
-        <td>{issue.effort}</td>
-        <td>{issue.due ? issue.due.toDateString() : ''}</td>
-        <td>{issue.title}</td>
-      </tr>
-    );
-  }
+  return (
+    <tr>
+      <td>{issue.id}</td>
+      <td>{issue.status}</td>
+      <td>{issue.owner}</td>
+      <td>{issue.created.toDateString()}</td>
+      <td>{issue.effort}</td>
+      <td>{issue.due ? issue.due.toDateString() : ''}</td>
+      <td>{issue.title}</td>
+    </tr>
+  );
 }
 
 class IssueFilter extends React.Component {
@@ -43,30 +41,28 @@ class IssueFilter extends React.Component {
   }
 }
 
-class IssueTable extends React.Component {
-  render() {
-    const issueRows = this.props.issues.map(issue => (
-      <IssueRow key={issue.id} issue={issue} />
-    ));
+function IssueTable(props) {
+  const issueRows = props.issues.map(issue => (
+    <IssueRow key={issue.id} issue={issue} />
+  ));
 
-    return (
-      <table className="bordered-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Status</th>
-            <th>Owner</th>
-            <th>Created</th>
-            <th>Effort</th>
-            <th>Due Date</th>
-            <th>Title</th>
-          </tr>
-        </thead>
+  return (
+    <table className="bordered-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Status</th>
+          <th>Owner</th>
+          <th>Created</th>
+          <th>Effort</th>
+          <th>Due Date</th>
+          <th>Title</th>
+        </tr>
+      </thead>
 
-        <tbody>{issueRows}</tbody>
-      </table>
-    );
-  }
+      <tbody>{issueRows}</tbody>
+    </table>
+  );
 }
 
 class IssueAdd extends React.Component {
