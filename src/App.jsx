@@ -1,3 +1,10 @@
+const datePattern = /^\d\d\d\d-\d\d-\d\d/;
+
+function jsonDateReviver(key, value) {
+  if (datePattern.test(value)) return new Date(value);
+  return value;
+}
+
 function IssueRow(props) {
   const issue = props.issue;
 
@@ -6,9 +13,9 @@ function IssueRow(props) {
       <td>{issue.id}</td>
       <td>{issue.status}</td>
       <td>{issue.owner}</td>
-      <td>{issue.created}</td>
+      <td>{issue.created.toDateString()}</td>
       <td>{issue.effort}</td>
-      <td>{issue.due}</td>
+      <td>{issue.due ? issue.due.toDateString() : ''}</td>
       <td>{issue.title}</td>
     </tr>
   );
@@ -104,7 +111,9 @@ class IssueList extends React.Component {
       },
       body: JSON.stringify({ query }),
     });
-    const result = await response.json();
+    // const result = await response.json();
+    const body = await response.text();
+    const result = JSON.parse(body, jsonDateReviver);
 
     this.setState({ issues: result.data.issueList });
   }
