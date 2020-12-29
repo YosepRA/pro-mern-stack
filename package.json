@@ -4,7 +4,7 @@
   "description": "Pro MERN Stack - Vasan Subramanian.",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -w server ./server/server.js",
+    "start": "nodemon -e js,graphql -w server ./server/server.js",
     "compile": "babel src --out-dir public",
     "watch": "babel src --out-dir public --watch --verbose"
   },

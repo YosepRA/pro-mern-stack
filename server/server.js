@@ -1,20 +1,12 @@
 const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
+const fs = require('fs');
 
 const app = express();
 
 let aboutMessage = 'Issue Tracker API v1.0';
 
 // Apollo server setup.
-const typeDefs = `
-  type Query {
-    about: String!
-  }
-
-  type Mutation {
-    setAboutMessage(message: String!): String
-  }
-`;
 const resolvers = {
   Query: {
     about: () => aboutMessage,
@@ -24,7 +16,10 @@ const resolvers = {
   },
 };
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({
+  typeDefs: fs.readFileSync('./server/schema.graphql', 'utf-8'),
+  resolvers,
+});
 server.applyMiddleware({ app, path: '/graphql' });
 
 app.use(express.static('./public'));
