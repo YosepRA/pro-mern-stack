@@ -10,6 +10,15 @@ type Issue {
   due: GraphQLDate
 }
 
+input IssueInputs {
+  title: String!
+  "Optional. If not supplied, will be set to 'New'."
+  status: String
+  owner: String
+  effort: String
+  due: GraphQLDate
+}
+
 ### Top level declarations.
 
 type Query {
@@ -19,4 +28,5 @@ type Query {
 
 type Mutation {
   setAboutMessage(message: String!): String
+  issueAdd(issue: IssueInputs!): Issue!
 }
