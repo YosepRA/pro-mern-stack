@@ -3,31 +3,31 @@ const { ApolloServer, UserInputError } = require('apollo-server-express');
 const fs = require('fs');
 const { GraphQLScalarType } = require('graphql');
 const { Kind } = require('graphql/language');
+const { MongoClient } = require('mongodb');
+
+require('dotenv').config();
 
 const app = express();
 
 let aboutMessage = 'Issue Tracker API v1.0';
-const issuesDB = [
-  {
-    id: 1,
-    status: 'New',
-    owner: 'Ravan',
-    effort: 5,
-    created: new Date('2019-01-15'),
-    due: undefined,
-    title: 'Error in console when clicking Add',
-  },
-  {
-    id: 2,
-    status: 'Assigned',
-    owner: 'Eddie',
-    effort: 14,
-    created: new Date('2019-01-16'),
-    due: new Date('2019-02-01'),
-    title: 'Missing bottom border on panel',
-  },
-];
 
+// Database setup.
+let db;
+const url = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.2bfif.mongodb.net/issue-tracker?retryWrites=true&w=majority`;
+
+async function connectToDB() {
+  const client = new MongoClient(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+  await client.connect();
+  console.log('Connected to MongoDB...');
+  db = client.db();
+}
+
+/* ====================================================================================== */
+
+// Apollo server setup.
 const GraphQLDate = new GraphQLScalarType({
   name: 'GraphQLDate',
   description: 'A Date type in GraphQL scalar type.',
@@ -46,7 +46,6 @@ const GraphQLDate = new GraphQLScalarType({
   },
 });
 
-// Apollo server setup.
 const resolvers = {
   Query: {
     about: () => aboutMessage,
@@ -63,8 +62,9 @@ function setAboutMessage(_, { message }) {
   return (aboutMessage = message);
 }
 
-function issueList() {
-  return issuesDB;
+async function issueList() {
+  const issues = await db.collection('issues').find({}).toArray();
+  return issues;
 }
 
 function validateIssue(issue) {
@@ -103,4 +103,11 @@ server.applyMiddleware({ app, path: '/graphql' });
 
 app.use(express.static('./public'));
 
-app.listen(3000, () => console.log('App is listening on port 3000...'));
+(async function () {
+  try {
+    await connectToDB();
+    app.listen(3000, console.log('App is listening on port 3000...'));
+  } catch (err) {
+    console.log('Error: ', err);
+  }
+})();
