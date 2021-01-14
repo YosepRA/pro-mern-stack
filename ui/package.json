@@ -1,10 +1,10 @@
 {
-  "name": "pro-mern-stack",
+  "name": "pro-mern-stack-ui",
   "version": "1.0.0",
-  "description": "Pro MERN Stack - Vasan Subramanian.",
+  "description": "Pro MERN Stack - Vasan Subramanian - UI.",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -e js,graphql -w server ./server/server.js",
+    "start": "nodemon -w uiserver.js uiserver.js",
     "compile": "babel src --out-dir public",
     "watch": "babel src --out-dir public --watch --verbose"
   },
@@ -19,12 +19,12 @@
   },
   "homepage": "https://github.com/YosepRA/pro-mern-stack#readme",
   "devDependencies": {
-    "babel-eslint": "^10.1.0",
-    "eslint": "^7.15.0",
-    "eslint-config-prettier": "^7.0.0",
-    "eslint-plugin-prettier": "^3.3.0",
-    "eslint-plugin-react": "^7.21.5",
-    "prettier": "^2.2.1"
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-react": "^7.12.10"
   },
-  "dependencies": {}
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }

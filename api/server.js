@@ -108,7 +108,7 @@ async function issueAdd(_, { issue }) {
 }
 
 const server = new ApolloServer({
-  typeDefs: fs.readFileSync('./server/schema.graphql', 'utf-8'),
+  typeDefs: fs.readFileSync('./schema.graphql', 'utf-8'),
   resolvers,
   formatError: error => {
     console.log(error);
@@ -117,12 +117,10 @@ const server = new ApolloServer({
 });
 server.applyMiddleware({ app, path: '/graphql' });
 
-app.use(express.static('./public'));
-
 (async function () {
   try {
     await connectToDB();
-    app.listen(3000, console.log('App is listening on port 3000...'));
+    app.listen(3000, console.log('API server is listening on port 3000...'));
   } catch (err) {
     console.log('Error: ', err);
   }
