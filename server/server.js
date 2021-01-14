@@ -80,15 +80,31 @@ function validateIssue(issue) {
   }
 }
 
-function issueAdd(_, { issue }) {
+async function getNextSequence(name) {
+  const result = await db
+    .collection('counters')
+    .findOneAndUpdate(
+      { _id: name },
+      { $inc: { current: 1 } },
+      { returnOriginal: false }
+    );
+
+  return result.value.current;
+}
+
+async function issueAdd(_, { issue }) {
   validateIssue(issue);
-  issue.id = issuesDB.length + 1;
+
+  issue.id = await getNextSequence('issues');
   issue.created = new Date();
-  if (issue.status == undefined) issue.status = 'New';
+  // Create new issue.
+  const result = await db.collection('issues').insertOne(issue);
+  // Get the newly created issue.
+  const savedIssue = await db
+    .collection('issues')
+    .findOne({ _id: result.insertedId });
 
-  issuesDB.push(issue);
-
-  return issue;
+  return savedIssue;
 }
 
 const server = new ApolloServer({
