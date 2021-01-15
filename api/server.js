@@ -9,11 +9,12 @@ require('dotenv').config();
 
 const app = express();
 
+const port = process.env.API_SERVER_PORT || 3000;
 let aboutMessage = 'Issue Tracker API v1.0';
 
 // Database setup.
 let db;
-const url = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.2bfif.mongodb.net/issue-tracker?retryWrites=true&w=majority`;
+const url = process.env.MONGODB_URL;
 
 async function connectToDB() {
   const client = new MongoClient(url, {
@@ -120,7 +121,7 @@ server.applyMiddleware({ app, path: '/graphql' });
 (async function () {
   try {
     await connectToDB();
-    app.listen(3000, console.log('API server is listening on port 3000...'));
+    app.listen(port, console.log(`API server is listening on port ${port}...`));
   } catch (err) {
     console.log('Error: ', err);
   }

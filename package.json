@@ -3,11 +3,7 @@
   "version": "1.0.0",
   "description": "Pro MERN Stack - Vasan Subramanian.",
   "main": "index.js",
-  "scripts": {
-    "start": "nodemon -e js,graphql -w server ./server/server.js",
-    "compile": "babel src --out-dir public",
-    "watch": "babel src --out-dir public --watch --verbose"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/YosepRA/pro-mern-stack.git"

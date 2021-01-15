@@ -2,7 +2,7 @@ const { MongoClient } = require('mongodb');
 
 require('dotenv').config();
 
-const url = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.2bfif.mongodb.net/issue-tracker?retryWrites=true&w=majority`;
+const url = process.env.MONGODB_URL;
 
 function testWithCallback(callback) {
   console.log('=== testWithCallback ===');
