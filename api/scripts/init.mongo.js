@@ -1,3 +1,6 @@
+/* global db print */
+/* eslint no-restricted-globals: ["error", "event"] */
+
 db.issues.remove({});
 
 const issuesDB = [

@@ -11,9 +11,9 @@ function testWithCallback(callback) {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
-  client.connect((err, client) => {
-    if (err) {
-      callback(err);
+  client.connect((connectErr) => {
+    if (connectErr) {
+      callback(connectErr);
       return;
     }
 
@@ -21,24 +21,24 @@ function testWithCallback(callback) {
     const collection = db.collection('employees');
 
     const employee = { id: 1, name: 'A. Callback', age: 23 };
-    collection.insertOne(employee, (err, result) => {
-      if (err) {
+    collection.insertOne(employee, (insertErr, result) => {
+      if (insertErr) {
         client.close();
-        callback(err);
+        callback(insertErr);
         return;
       }
 
       console.log('Result of insert: ', result.insertedId);
-      collection.find({ _id: result.insertedId }).toArray((err, docs) => {
-        if (err) {
+      collection.find({ _id: result.insertedId }).toArray((findErr, docs) => {
+        if (findErr) {
           client.close();
-          callback(err);
+          callback(findErr);
           return;
         }
 
         console.log('Result of find: ', docs);
         client.close();
-        callback(err);
+        callback();
       });
     });
   });
@@ -69,7 +69,7 @@ async function testWithAsync() {
   }
 }
 
-testWithCallback(err => {
+testWithCallback((err) => {
   if (err) {
     console.log(err);
   }

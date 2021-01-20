@@ -32,7 +32,7 @@
       "error",
       {
         "singleQuote": true,
-        "arrowParens": "avoid",
+        "arrowParens": "always",
         "endOfLine": "auto"
       }
     ]
