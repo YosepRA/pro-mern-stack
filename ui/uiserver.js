@@ -16,6 +16,6 @@ app.get('/env.js', (req, res) => {
   res.send(`window.ENV = ${JSON.stringify(env)}`);
 });
 
-app.listen(port, () =>
-  console.log(`UI Server is listening on port ${port}...`)
-);
+app.listen(port, () => {
+  console.log(`UI Server is listening on port ${port}...`);
+});

@@ -1,3 +1,8 @@
+/* globals React ReactDOM */
+/* eslint-disable react/react-in-jsx-scope */
+/* eslint-disable react/jsx-no-undef */
+/* eslint-disable no-alert */
+
 const datePattern = /^\d\d\d\d-\d\d-\d\d/;
 
 function jsonDateReviver(key, value) {
@@ -29,12 +34,11 @@ async function graphQLFetch(query, variables = {}) {
     return result.data;
   } catch (error) {
     alert(`Error in sending data to server: ${error.message}`);
+    return null;
   }
 }
 
-function IssueRow(props) {
-  const issue = props.issue;
-
+function IssueRow({ issue }) {
   return (
     <tr>
       <td>{issue.id}</td>
@@ -48,14 +52,15 @@ function IssueRow(props) {
   );
 }
 
+// eslint-disable-next-line react/prefer-stateless-function
 class IssueFilter extends React.Component {
   render() {
     return <div>IssueFilter placeholder.</div>;
   }
 }
 
-function IssueTable(props) {
-  const issueRows = props.issues.map(issue => (
+function IssueTable({ issues }) {
+  const issueRows = issues.map(issue => (
     <IssueRow key={issue.id} issue={issue} />
   ));
 
@@ -85,6 +90,8 @@ class IssueAdd extends React.Component {
   }
 
   handleSubmit(event) {
+    const { createIssue } = this.props;
+
     event.preventDefault();
     const form = document.forms.issueAdd;
     const issue = {
@@ -92,7 +99,7 @@ class IssueAdd extends React.Component {
       title: form.title.value,
       due: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 10),
     };
-    this.props.createIssue(issue);
+    createIssue(issue);
     form.owner.value = '';
     form.title.value = '';
   }
@@ -102,7 +109,8 @@ class IssueAdd extends React.Component {
       <form name="issueAdd" onSubmit={this.handleSubmit}>
         <input type="text" name="owner" placeholder="Owner" />
         <input type="text" name="title" placeholder="Title" />
-        <button>Add</button>
+
+        <button type="submit">Add</button>
       </form>
     );
   }
@@ -115,6 +123,10 @@ class IssueList extends React.Component {
       issues: [],
     };
     this.createIssue = this.createIssue.bind(this);
+  }
+
+  componentDidMount() {
+    this.loadData();
   }
 
   async loadData() {
@@ -152,17 +164,15 @@ class IssueList extends React.Component {
     if (data) this.loadData();
   }
 
-  componentDidMount() {
-    this.loadData();
-  }
-
   render() {
+    const { issues } = this.state;
+
     return (
       <React.Fragment>
         <h1>Issue Tracker</h1>
         <IssueFilter />
         <hr />
-        <IssueTable issues={this.state.issues} />
+        <IssueTable issues={issues} />
         <hr />
         <IssueAdd createIssue={this.createIssue} />
       </React.Fragment>
