@@ -26,7 +26,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-/* globals React ReactDOM */
+/* globals React ReactDOM PropTypes */
 
 /* eslint-disable react/react-in-jsx-scope */
 
@@ -201,6 +201,10 @@ var IssueAdd = /*#__PURE__*/function (_React$Component2) {
 
   return IssueAdd;
 }(React.Component);
+
+IssueAdd.propTypes = {
+  createIssue: PropTypes.func.isRequired
+};
 
 var IssueList = /*#__PURE__*/function (_React$Component3) {
   _inherits(IssueList, _React$Component3);

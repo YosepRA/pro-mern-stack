@@ -1,4 +1,4 @@
-/* globals React ReactDOM */
+/* globals React ReactDOM PropTypes */
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/jsx-no-undef */
 /* eslint-disable no-alert */
@@ -115,6 +115,10 @@ class IssueAdd extends React.Component {
     );
   }
 }
+
+IssueAdd.propTypes = {
+  createIssue: PropTypes.func.isRequired,
+};
 
 class IssueList extends React.Component {
   constructor() {
