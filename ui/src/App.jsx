@@ -1,4 +1,7 @@
-/* globals React ReactDOM */
+import React from 'react';
+import ReactDOM from 'react-dom';
+import 'whatwg-fetch';
+import 'babel-polyfill';
 
 import IssueList from './IssueList.jsx';
 

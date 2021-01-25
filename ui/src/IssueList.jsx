@@ -1,5 +1,6 @@
-/* global React */
 /* eslint-disable react/jsx-no-undef */
+
+import React from 'react';
 
 import IssueFilter from './IssueFilter.jsx';
 import IssueTable from './IssueTable.jsx';
