@@ -2,10 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'whatwg-fetch';
 import 'babel-polyfill';
+import { HashRouter as Router } from 'react-router-dom';
 
-import IssueList from './IssueList.jsx';
+import Page from './Page.jsx';
 
-const element = <IssueList />;
+const element = (
+  <Router>
+    <Page />
+  </Router>
+);
 
 ReactDOM.render(element, document.getElementById('content'));
 
