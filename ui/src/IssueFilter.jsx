@@ -4,6 +4,14 @@ import React from 'react';
 
 export default class IssueFilter extends React.Component {
   render() {
-    return <div>IssueFilter placeholder.</div>;
+    return (
+      <div>
+        <a href="/#/issues">All</a>
+        {' | '}
+        <a href="/#/issues?status=New">New</a>
+        {' | '}
+        <a href="/#/issues?status=Assigned">Assigned</a>
+      </div>
+    );
   }
 }

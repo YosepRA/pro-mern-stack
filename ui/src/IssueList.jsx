@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-no-undef */
 
 import React from 'react';
+import URLSearchParams from 'url-search-params';
 
 import IssueFilter from './IssueFilter.jsx';
 import IssueTable from './IssueTable.jsx';
@@ -20,10 +21,28 @@ export default class IssueList extends React.Component {
     this.loadData();
   }
 
+  componentDidUpdate(prevProps) {
+    const {
+      location: { search: prevSearch },
+    } = prevProps;
+    const {
+      location: { search },
+    } = this.props;
+    // Comparing previous search value with the current one, and only refresh if they're different.
+    if (prevSearch !== search) this.loadData();
+  }
+
   async loadData() {
+    const { location } = this.props;
+
+    const { search } = location;
+    const params = new URLSearchParams(search);
+    const vars = {};
+    if (params.get('status')) vars.status = params.get('status');
+
     const query = `
-      query {
-        issueList {
+      query issueList($status: StatusType) {
+        issueList(status: $status) {
           id
           title
           status
@@ -35,7 +54,7 @@ export default class IssueList extends React.Component {
       }
     `;
 
-    const data = await graphQLFetch(query);
+    const data = await graphQLFetch(query, vars);
     if (data) {
       this.setState({ issues: data.issueList });
     }
