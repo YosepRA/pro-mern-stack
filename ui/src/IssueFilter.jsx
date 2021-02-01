@@ -1,16 +1,19 @@
 /* eslint-disable react/prefer-stateless-function */
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default class IssueFilter extends React.Component {
   render() {
     return (
       <div>
-        <a href="/#/issues">All</a>
+        <Link to={{ pathname: '/issues' }}>All</Link>
         {' | '}
-        <a href="/#/issues?status=New">New</a>
+        <Link to={{ pathname: '/issues', search: '?status=New' }}>New</Link>
         {' | '}
-        <a href="/#/issues?status=Assigned">Assigned</a>
+        <Link to={{ pathname: '/issues', search: '?status=Assigned' }}>
+          Assigned
+        </Link>
       </div>
     );
   }
