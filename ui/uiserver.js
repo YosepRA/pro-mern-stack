@@ -1,5 +1,7 @@
 const express = require('express');
 const proxy = require('http-proxy-middleware');
+const path = require('path');
+// const history = require('connect-history-api-fallback');
 
 require('dotenv').config();
 
@@ -31,11 +33,16 @@ if (enableHMR && process.env.NODE_ENV !== 'production') {
   app.use(hotMiddleware(compiler));
 }
 
+// app.use(history());
 app.use(express.static('./public'));
 if (apiProxyTarget) app.use('/graphql', proxy({ target: apiProxyTarget }));
 
 app.get('/env.js', (req, res) => {
   res.send(`window.ENV = ${JSON.stringify(env)}`);
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve('public/index.html'));
 });
 
 app.listen(port, () => {
