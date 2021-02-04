@@ -35,9 +35,10 @@ export default class IssueList extends React.Component {
   }
 
   async loadData() {
-    const { location } = this.props;
+    const {
+      location: { search },
+    } = this.props;
 
-    const { search } = location;
     const params = new URLSearchParams(search);
     const vars = {};
     if (params.get('status')) vars.status = params.get('status');
