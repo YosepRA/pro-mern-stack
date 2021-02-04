@@ -2,10 +2,22 @@ const { UserInputError } = require('apollo-server-express');
 
 const { getDB, getNextSequence } = require('./db');
 
-async function list(_, { status }) {
+async function list(_, { status, effortMin, effortMax }) {
   const db = getDB();
+  // Fill up the filter along the way.
   const filter = {};
+  // Status filter.
   if (status) filter.status = status;
+  // Effort filter.
+  if (effortMin !== undefined || effortMax !== undefined) {
+    // Undefined effort field will always get returned.
+    filter.$or = [{ effort: undefined }];
+    const rangeFilter = { effort: {} };
+    // Range filters.
+    if (effortMin !== undefined) rangeFilter.effort.$gte = effortMin;
+    if (effortMax !== undefined) rangeFilter.effort.$lte = effortMax;
+    filter.$or.push(rangeFilter);
+  }
   const issues = await db.collection('issues').find(filter).toArray();
   return issues;
 }
