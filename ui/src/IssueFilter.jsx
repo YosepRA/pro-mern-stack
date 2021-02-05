@@ -11,10 +11,14 @@ class IssueFilter extends React.Component {
     const params = new URLSearchParams(search);
     this.state = {
       status: params.get('status') || '',
+      effortMin: params.get('effortMin') || '',
+      effortMax: params.get('effortMax') || '',
       changed: false,
     };
 
     this.onChangeStatus = this.onChangeStatus.bind(this);
+    this.onChangeEffortMin = this.onChangeEffortMin.bind(this);
+    this.onChangeEffortMax = this.onChangeEffortMax.bind(this);
     this.applyFilter = this.applyFilter.bind(this);
     this.showOriginalFilter = this.showOriginalFilter.bind(this);
   }
@@ -34,41 +38,83 @@ class IssueFilter extends React.Component {
     this.setState({ status: value, changed: true });
   }
 
+  onChangeEffortMin({ target: { value: effortValue } }) {
+    if (effortValue.match(/^\d*$/)) {
+      this.setState({ effortMin: effortValue, changed: true });
+    }
+  }
+
+  onChangeEffortMax({ target: { value: effortValue } }) {
+    if (effortValue.match(/^\d*$/)) {
+      this.setState({ effortMax: effortValue, changed: true });
+    }
+  }
+
   showOriginalFilter() {
     const {
       location: { search },
     } = this.props;
     const params = new URLSearchParams(search);
 
-    this.setState({ status: params.get('status') || '', changed: false });
+    this.setState({
+      status: params.get('status') || '',
+      effortMin: params.get('effortMin') || '',
+      effortMax: params.get('effortMax') || '',
+      changed: false,
+    });
   }
 
   applyFilter() {
     const { history } = this.props;
-    const { status } = this.state;
+    const { status, effortMin, effortMax } = this.state;
 
+    const params = new URLSearchParams();
+    if (status) params.set('status', status);
+    if (effortMin) params.set('effortMin', effortMin);
+    if (effortMax) params.set('effortMax', effortMax);
+
+    const search = params.toString() ? `?${params.toString()}` : '';
     history.push({
       pathname: '/issues',
-      search: status.length > 0 ? `?status=${status}` : '',
+      search,
     });
   }
 
   render() {
-    const { status, changed } = this.state;
+    const { status, effortMin, effortMax, changed } = this.state;
 
     return (
       <div>
-        Status:{' '}
+        Status:
+        {'  '}
         <select onChange={this.onChangeStatus} value={status}>
           <option value="">All</option>
           <option value="New">New</option>
           <option value="Assigned">Assigned</option>
           <option value="Fixed">Fixed</option>
           <option value="Closed">Closed</option>
-        </select>{' '}
+        </select>
+        {'  '}
+        Effort between:
+        {'  '}
+        <input
+          type="text"
+          size={5}
+          value={effortMin}
+          onChange={this.onChangeEffortMin}
+        />
+        {' - '}
+        <input
+          type="text"
+          size={5}
+          value={effortMax}
+          onChange={this.onChangeEffortMax}
+        />
+        {'  '}
         <button type="button" onClick={this.applyFilter}>
           Apply
-        </button>{' '}
+        </button>
+        {'  '}
         <button
           type="button"
           onClick={this.showOriginalFilter}
