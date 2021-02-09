@@ -3,16 +3,19 @@ import { Link } from 'react-router-dom';
 
 import graphQLFetch from './graphQLFetch.js';
 import NumInput from './NumInput.jsx';
+import DateInput from './DateInput.jsx';
 
 export default class IssueEdit extends Component {
   constructor() {
     super();
     this.state = {
       issue: {},
+      invalidFields: {},
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.onValidityChange = this.onValidityChange.bind(this);
   }
 
   componentDidMount() {
@@ -32,6 +35,14 @@ export default class IssueEdit extends Component {
     } = prevProps;
 
     if (id !== prevID) this.loadData();
+  }
+
+  onValidityChange({ target: { name } }, valid) {
+    this.setState(prevState => {
+      const invalidFields = { ...prevState.invalidFields, [name]: !valid };
+      if (valid) delete invalidFields[name];
+      return { invalidFields };
+    });
   }
 
   handleChange(event, naturalValue) {
@@ -81,14 +92,12 @@ export default class IssueEdit extends Component {
     if (data) {
       const { issue } = data;
 
-      issue.due = issue.due ? issue.due.toDateString() : '';
-      issue.effort = issue.effort != null ? issue.effort.toString() : '';
       issue.owner = issue.owner != null ? issue.owner : '';
       issue.description = issue.description != null ? issue.description : '';
 
-      this.setState({ issue });
+      this.setState({ issue, invalidFields: {} });
     } else {
-      this.setState({ issue: {} });
+      this.setState({ issue: {}, invalidFields: {} });
     }
   }
 
@@ -107,6 +116,17 @@ export default class IssueEdit extends Component {
         return <h3>{`Issue with ID ${propsID} not found.`}</h3>;
       }
       return null;
+    }
+
+    // Error message.
+    const { invalidFields } = this.state;
+    let validationMessage;
+    if (Object.keys(invalidFields).length !== 0) {
+      validationMessage = (
+        <div className="error">
+          Please correct invalid fields before submitting.
+        </div>
+      );
     }
 
     const {
@@ -168,11 +188,13 @@ export default class IssueEdit extends Component {
             <tr>
               <td>Due:</td>
               <td>
-                <input
+                <DateInput
                   type="text"
                   name="due"
                   value={due}
                   onChange={this.handleChange}
+                  onValidityChange={this.onValidityChange}
+                  key={id}
                 />
               </td>
             </tr>
@@ -211,6 +233,8 @@ export default class IssueEdit extends Component {
             </tr>
           </tbody>
         </table>
+
+        {validationMessage}
 
         <Link to={`/edit/${id - 1}`}>Prev</Link>
         {' | '}
