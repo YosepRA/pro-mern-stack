@@ -4,7 +4,7 @@ const fs = require('fs');
 
 const GraphQLDate = require('./graphql_date');
 const { getMessage, setMessage } = require('./about');
-const { list, add, get } = require('./issue');
+const { list, add, get, update } = require('./issue');
 
 const resolvers = {
   Query: {
@@ -15,6 +15,7 @@ const resolvers = {
   Mutation: {
     setAboutMessage: setMessage,
     issueAdd: add,
+    issueUpdate: update,
   },
   GraphQLDate,
 };

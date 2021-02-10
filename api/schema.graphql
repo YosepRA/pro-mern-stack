@@ -29,6 +29,15 @@ input IssueInputs {
   description: String
 }
 
+input IssueUpdateInputs {
+  title: String
+  status: StatusType
+  owner: String
+  effort: String
+  due: GraphQLDate
+  description: String
+}
+
 ### Top level declarations.
 
 type Query {
@@ -40,4 +49,5 @@ type Query {
 type Mutation {
   setAboutMessage(message: String!): String
   issueAdd(issue: IssueInputs!): Issue!
+  issueUpdate(id: Int!, changes: IssueUpdateInputs!): Issue!
 }
