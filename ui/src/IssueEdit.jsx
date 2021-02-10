@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import graphQLFetch from './graphQLFetch.js';
 import NumInput from './NumInput.jsx';
 import DateInput from './DateInput.jsx';
+import TextInput from './TextInput.jsx';
 
 export default class IssueEdit extends Component {
   constructor() {
@@ -89,16 +90,7 @@ export default class IssueEdit extends Component {
 
     const data = await graphQLFetch(query, { id });
 
-    if (data) {
-      const { issue } = data;
-
-      issue.owner = issue.owner != null ? issue.owner : '';
-      issue.description = issue.description != null ? issue.description : '';
-
-      this.setState({ issue, invalidFields: {} });
-    } else {
-      this.setState({ issue: {}, invalidFields: {} });
-    }
+    this.setState({ issue: data ? data.issue : {}, invalidFields: {} });
   }
 
   render() {
@@ -164,11 +156,12 @@ export default class IssueEdit extends Component {
             <tr>
               <td>Owner:</td>
               <td>
-                <input
+                <TextInput
                   type="text"
                   name="owner"
                   value={owner}
                   onChange={this.handleChange}
+                  key={id}
                 />
               </td>
             </tr>
@@ -202,12 +195,13 @@ export default class IssueEdit extends Component {
             <tr>
               <td>Title:</td>
               <td>
-                <input
+                <TextInput
                   type="text"
                   name="title"
                   value={title}
                   onChange={this.handleChange}
                   size={50}
+                  key={id}
                 />
               </td>
             </tr>
@@ -215,12 +209,14 @@ export default class IssueEdit extends Component {
             <tr>
               <td>Description</td>
               <td>
-                <textarea
+                <TextInput
+                  tag="textarea"
                   cols="50"
                   rows="8"
                   name="description"
                   value={description}
                   onChange={this.handleChange}
+                  key={id}
                 />
               </td>
             </tr>
