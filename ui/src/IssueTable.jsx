@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, NavLink, withRouter } from 'react-router-dom';
 
 const IssueRow = withRouter(
-  ({ issue, location: { search }, index, closeIssue }) => {
+  ({ issue, location: { search }, index, closeIssue, deleteIssue }) => {
     const selectLocation = {
       pathname: `/issues/${issue.id}`,
       search,
@@ -25,19 +25,24 @@ const IssueRow = withRouter(
           <button type="button" onClick={() => closeIssue(index)}>
             Close
           </button>
+          {' | '}
+          <button type="button" onClick={() => deleteIssue(index)}>
+            Delete
+          </button>
         </td>
       </tr>
     );
   }
 );
 
-export default function IssueTable({ issues, closeIssue }) {
+export default function IssueTable({ issues, closeIssue, deleteIssue }) {
   const issueRows = issues.map((issue, index) => (
     <IssueRow
       key={issue.id}
       issue={issue}
       index={index}
       closeIssue={closeIssue}
+      deleteIssue={deleteIssue}
     />
   ));
 
