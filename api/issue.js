@@ -76,4 +76,23 @@ async function update(_, { id, changes }) {
   return savedIssue;
 }
 
-module.exports = { list, get, add, update };
+/* The function will not delete the data right away, but put it in a recycle bin first for
+later necessary data recovery. */
+async function remove(_, { id }) {
+  const db = getDB();
+  const issue = await db.collection('issues').findOne({ id });
+  if (!issue) return false;
+  // Set today's time stamp for permanent deletion parameter.
+  issue.deleted = new Date();
+  // Insert to specific collection that acts as a recycle bin.
+  let result = await db.collection('deleted_issues').insertOne(issue);
+  if (result.insertedId) {
+    // Remove from issues collection.
+    result = await db.collection('issues').removeOne({ id });
+    return result.deletedCount === 1;
+  }
+
+  return false;
+}
+
+module.exports = { list, get, add, update, remove };
