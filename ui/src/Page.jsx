@@ -1,19 +1,70 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import {
+  Navbar,
+  Nav,
+  NavItem,
+  NavDropdown,
+  MenuItem,
+  Glyphicon,
+  OverlayTrigger,
+  Tooltip,
+} from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 
 import Contents from './Contents.jsx';
 
 function NavBar() {
   return (
-    <nav>
-      <NavLink exact to="/">
-        Home
-      </NavLink>
-      {' | '}
-      <NavLink to="/issues">Issue List</NavLink>
-      {' | '}
-      <NavLink to="/report">Report</NavLink>
-    </nav>
+    <Navbar>
+      <Navbar.Header>
+        <Navbar.Brand>Issue Tracker</Navbar.Brand>
+      </Navbar.Header>
+
+      <Nav>
+        <LinkContainer exact to="/">
+          <NavItem>Home</NavItem>
+        </LinkContainer>
+        <LinkContainer to="/issues">
+          <NavItem>List</NavItem>
+        </LinkContainer>
+        <LinkContainer to="/report">
+          <NavItem>Report</NavItem>
+        </LinkContainer>
+      </Nav>
+
+      <Nav pullRight>
+        <NavItem>
+          <OverlayTrigger
+            delayShow={1000}
+            placement="left"
+            overlay={<Tooltip id="create-issue">Create issues</Tooltip>}
+          >
+            <Glyphicon glyph="plus" />
+          </OverlayTrigger>
+        </NavItem>
+
+        <NavDropdown
+          id="user-dropdown"
+          title={<Glyphicon glyph="option-vertical" />}
+          noCaret
+        >
+          <MenuItem>About</MenuItem>
+        </NavDropdown>
+      </Nav>
+    </Navbar>
+  );
+}
+
+function Footer() {
+  return (
+    <small>
+      <p className="text-center">
+        Full source code available at this{' '}
+        <a href="https://github.com/YosepRA/pro-mern-stack">
+          GitHub repository.
+        </a>
+      </p>
+    </small>
   );
 }
 
@@ -22,6 +73,7 @@ export default function Page() {
     <div>
       <NavBar />
       <Contents />
+      <Footer />
     </div>
   );
 }
