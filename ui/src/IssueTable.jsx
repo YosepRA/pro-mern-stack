@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, NavLink, withRouter } from 'react-router-dom';
+import { Button, Glyphicon, Tooltip, OverlayTrigger } from 'react-bootstrap';
 
 const IssueRow = withRouter(
   ({ issue, location: { search }, index, closeIssue, deleteIssue }) => {
@@ -7,6 +8,8 @@ const IssueRow = withRouter(
       pathname: `/issues/${issue.id}`,
       search,
     };
+    const closeTooltip = <Tooltip id="tooltip">Close issue</Tooltip>;
+    const deleteTooltip = <Tooltip id="tooltip">Delete issue</Tooltip>;
 
     return (
       <tr>
@@ -22,13 +25,25 @@ const IssueRow = withRouter(
           {' | '}
           <NavLink to={selectLocation}>Details</NavLink>
           {' | '}
-          <button type="button" onClick={() => closeIssue(index)}>
-            Close
-          </button>
+          <OverlayTrigger
+            delayShow={1000}
+            overlay={closeTooltip}
+            placement="top"
+          >
+            <Button bsSize="xsmall" onClick={() => closeIssue(index)}>
+              <Glyphicon glyph="remove" />
+            </Button>
+          </OverlayTrigger>
           {' | '}
-          <button type="button" onClick={() => deleteIssue(index)}>
-            Delete
-          </button>
+          <OverlayTrigger
+            delayShow={1000}
+            overlay={deleteTooltip}
+            placement="top"
+          >
+            <Button bsSize="xsmall" onClick={() => deleteIssue(index)}>
+              <Glyphicon glyph="trash" />
+            </Button>
+          </OverlayTrigger>
         </td>
       </tr>
     );
