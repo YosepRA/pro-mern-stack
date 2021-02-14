@@ -8,6 +8,7 @@ import {
   Glyphicon,
   OverlayTrigger,
   Tooltip,
+  Grid,
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
@@ -72,7 +73,9 @@ export default function Page() {
   return (
     <div>
       <NavBar />
-      <Contents />
+      <Grid fluid>
+        <Contents />
+      </Grid>
       <Footer />
     </div>
   );
