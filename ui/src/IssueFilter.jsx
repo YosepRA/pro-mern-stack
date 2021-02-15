@@ -10,6 +10,8 @@ import {
   FormControl,
   ControlLabel,
   InputGroup,
+  Row,
+  Col,
 } from 'react-bootstrap';
 
 class IssueFilter extends React.Component {
@@ -92,52 +94,64 @@ class IssueFilter extends React.Component {
     const { status, effortMin, effortMax, changed } = this.state;
 
     return (
-      <div>
-        <FormGroup>
-          <ControlLabel>Status:</ControlLabel>
+      <Row>
+        <Col xs={6} sm={4} md={3} lg={2}>
+          <FormGroup bsSize="small">
+            <ControlLabel>Status:</ControlLabel>
 
-          <FormControl
-            componentClass="select"
-            onChange={this.onChangeStatus}
-            value={status}
-          >
-            <option value="">All</option>
-            <option value="New">New</option>
-            <option value="Assigned">Assigned</option>
-            <option value="Fixed">Fixed</option>
-            <option value="Closed">Closed</option>
-          </FormControl>
-        </FormGroup>
-
-        <FormGroup>
-          <ControlLabel>Effort between:</ControlLabel>
-
-          <InputGroup>
             <FormControl
-              type="text"
-              size={5}
-              value={effortMin}
-              onChange={this.onChangeEffortMin}
-            />
-            <InputGroup.Addon>-</InputGroup.Addon>
-            <FormControl
-              type="text"
-              size={5}
-              value={effortMax}
-              onChange={this.onChangeEffortMax}
-            />
-          </InputGroup>
-        </FormGroup>
+              componentClass="select"
+              onChange={this.onChangeStatus}
+              value={status}
+            >
+              <option value="">All</option>
+              <option value="New">New</option>
+              <option value="Assigned">Assigned</option>
+              <option value="Fixed">Fixed</option>
+              <option value="Closed">Closed</option>
+            </FormControl>
+          </FormGroup>
+        </Col>
 
-        <ButtonToolbar>
-          <Button bsStyle="primary" onClick={this.applyFilter}>
-            Apply
-          </Button>
-          <Button onClick={this.showOriginalFilter} disabled={!changed}>
-            Reset
-          </Button>
-        </ButtonToolbar>
-      </div>
+        <Col xs={6} sm={4} md={3} lg={2}>
+          <FormGroup bsSize="small">
+            <ControlLabel>Effort between:</ControlLabel>
+
+            <InputGroup>
+              <FormControl
+                type="text"
+                size={5}
+                value={effortMin}
+                onChange={this.onChangeEffortMin}
+              />
+              <InputGroup.Addon>-</InputGroup.Addon>
+              <FormControl
+                type="text"
+                size={5}
+                value={effortMax}
+                onChange={this.onChangeEffortMax}
+              />
+            </InputGroup>
+          </FormGroup>
+        </Col>
+
+        <Col xs={6} sm={4} md={3} lg={2}>
+          <ControlLabel>&nbsp;</ControlLabel>
+
+          <ButtonToolbar>
+            <Button bsSize="small" bsStyle="primary" onClick={this.applyFilter}>
+              Apply
+            </Button>
+            <Button
+              bsSize="small"
+              onClick={this.showOriginalFilter}
+              disabled={!changed}
+            >
+              Reset
+            </Button>
+          </ButtonToolbar>
+        </Col>
+      </Row>
     );
   }
 }
