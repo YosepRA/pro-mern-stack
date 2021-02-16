@@ -10,6 +10,7 @@ import {
   ControlLabel,
   Button,
   ButtonToolbar,
+  Alert,
 } from 'react-bootstrap';
 
 import graphQLFetch from './graphQLFetch.js';
@@ -23,11 +24,13 @@ export default class IssueEdit extends Component {
     this.state = {
       issue: {},
       invalidFields: {},
+      showingValidation: false,
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onValidityChange = this.onValidityChange.bind(this);
+    this.dismissValidation = this.dismissValidation.bind(this);
   }
 
   componentDidMount() {
@@ -73,6 +76,7 @@ export default class IssueEdit extends Component {
 
   async handleSubmit(event) {
     event.preventDefault();
+    this.showValidation();
     const { issue, invalidFields } = this.state;
     if (Object.keys(invalidFields).length !== 0) return;
 
@@ -97,6 +101,14 @@ export default class IssueEdit extends Component {
       // eslint-disable-next-line no-alert
       alert('Updated issue successfully');
     }
+  }
+
+  showValidation() {
+    this.setState({ showingValidation: true });
+  }
+
+  dismissValidation() {
+    this.setState({ showingValidation: false });
   }
 
   async loadData() {
@@ -144,13 +156,13 @@ export default class IssueEdit extends Component {
     }
 
     // Error message.
-    const { invalidFields } = this.state;
+    const { invalidFields, showingValidation } = this.state;
     let validationMessage;
-    if (Object.keys(invalidFields).length !== 0) {
+    if (Object.keys(invalidFields).length !== 0 && showingValidation) {
       validationMessage = (
-        <div className="error">
+        <Alert bsStyle="danger" onDismiss={this.dismissValidation}>
           Please correct invalid fields before submitting.
-        </div>
+        </Alert>
       );
     }
 
@@ -293,8 +305,13 @@ export default class IssueEdit extends Component {
                 </ButtonToolbar>
               </Col>
             </FormGroup>
+
+            <FormGroup>
+              <Col smOffset={3} sm={9}>
+                {validationMessage}
+              </Col>
+            </FormGroup>
           </Form>
-          {validationMessage}
         </Panel.Body>
 
         <Panel.Footer>
