@@ -1,5 +1,16 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { LinkContainer } from 'react-router-bootstrap';
+import {
+  Col,
+  Panel,
+  Form,
+  FormGroup,
+  FormControl,
+  ControlLabel,
+  Button,
+  ButtonToolbar,
+} from 'react-bootstrap';
 
 import graphQLFetch from './graphQLFetch.js';
 import NumInput from './NumInput.jsx';
@@ -148,20 +159,31 @@ export default class IssueEdit extends Component {
     } = this.state;
 
     return (
-      <form onSubmit={this.handleSubmit}>
-        <h3>{`Editing issue: ${id}`}</h3>
+      <Panel>
+        <Panel.Heading>
+          <Panel.Title>{`Editing issue: ${id}`}</Panel.Title>
+        </Panel.Heading>
 
-        <table>
-          <tbody>
-            <tr>
-              <td>Created:</td>
-              <td>{created.toDateString()}</td>
-            </tr>
+        <Panel.Body>
+          <Form horizontal onSubmit={this.handleSubmit}>
+            <FormGroup>
+              <Col sm={3} componentClass={ControlLabel}>
+                Created:
+              </Col>
+              <Col sm={9}>
+                <FormControl.Static>
+                  {created.toDateString()}
+                </FormControl.Static>
+              </Col>
+            </FormGroup>
 
-            <tr>
-              <td>Status:</td>
-              <td>
-                <select
+            <FormGroup>
+              <Col sm={3} componentClass={ControlLabel}>
+                Status:
+              </Col>
+              <Col sm={9}>
+                <FormControl
+                  componentClass="select"
                   name="status"
                   id="status"
                   value={status}
@@ -171,39 +193,48 @@ export default class IssueEdit extends Component {
                   <option value="Assigned">Assigned</option>
                   <option value="Fixed">Fixed</option>
                   <option value="Closed">Closed</option>
-                </select>
-              </td>
-            </tr>
+                </FormControl>
+              </Col>
+            </FormGroup>
 
-            <tr>
-              <td>Owner:</td>
-              <td>
-                <TextInput
+            <FormGroup>
+              <Col sm={3} componentClass={ControlLabel}>
+                Owner:
+              </Col>
+              <Col sm={9}>
+                <FormControl
+                  componentClass={TextInput}
                   type="text"
                   name="owner"
                   value={owner}
                   onChange={this.handleChange}
                   key={id}
                 />
-              </td>
-            </tr>
+              </Col>
+            </FormGroup>
 
-            <tr>
-              <td>Effort:</td>
-              <td>
-                <NumInput
+            <FormGroup>
+              <Col sm={3} componentClass={ControlLabel}>
+                Effort:
+              </Col>
+              <Col sm={9}>
+                <FormControl
+                  componentClass={NumInput}
                   name="effort"
                   value={effort}
                   onChange={this.handleChange}
                   key={id}
                 />
-              </td>
-            </tr>
+              </Col>
+            </FormGroup>
 
-            <tr>
-              <td>Due:</td>
-              <td>
-                <DateInput
+            <FormGroup validationState={invalidFields.due ? 'error' : null}>
+              <Col sm={3} componentClass={ControlLabel}>
+                Due:
+              </Col>
+              <Col sm={9}>
+                <FormControl
+                  componentClass={DateInput}
                   type="text"
                   name="due"
                   value={due}
@@ -211,13 +242,17 @@ export default class IssueEdit extends Component {
                   onValidityChange={this.onValidityChange}
                   key={id}
                 />
-              </td>
-            </tr>
+                <FormControl.Feedback />
+              </Col>
+            </FormGroup>
 
-            <tr>
-              <td>Title:</td>
-              <td>
-                <TextInput
+            <FormGroup>
+              <Col sm={3} componentClass={ControlLabel}>
+                Title:
+              </Col>
+              <Col sm={9}>
+                <FormControl
+                  componentClass={TextInput}
                   type="text"
                   name="title"
                   value={title}
@@ -225,13 +260,16 @@ export default class IssueEdit extends Component {
                   size={50}
                   key={id}
                 />
-              </td>
-            </tr>
+              </Col>
+            </FormGroup>
 
-            <tr>
-              <td>Description</td>
-              <td>
-                <TextInput
+            <FormGroup>
+              <Col sm={3} componentClass={ControlLabel}>
+                Description
+              </Col>
+              <Col sm={9}>
+                <FormControl
+                  componentClass={TextInput}
                   tag="textarea"
                   cols="50"
                   rows="8"
@@ -240,24 +278,31 @@ export default class IssueEdit extends Component {
                   onChange={this.handleChange}
                   key={id}
                 />
-              </td>
-            </tr>
+              </Col>
+            </FormGroup>
 
-            <tr>
-              <td />
-              <td>
-                <button type="submit">Submit</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            <FormGroup>
+              <Col smOffset={3} sm={9}>
+                <ButtonToolbar>
+                  <Button type="submit" bsStyle="primary">
+                    Submit
+                  </Button>
+                  <LinkContainer to="/issues">
+                    <Button bsStyle="link">Back</Button>
+                  </LinkContainer>
+                </ButtonToolbar>
+              </Col>
+            </FormGroup>
+          </Form>
+          {validationMessage}
+        </Panel.Body>
 
-        {validationMessage}
-
-        <Link to={`/edit/${id - 1}`}>Prev</Link>
-        {' | '}
-        <Link to={`/edit/${id + 1}`}>Next</Link>
-      </form>
+        <Panel.Footer>
+          <Link to={`/edit/${id - 1}`}>Prev</Link>
+          {' | '}
+          <Link to={`/edit/${id + 1}`}>Next</Link>
+        </Panel.Footer>
+      </Panel>
     );
   }
 }
