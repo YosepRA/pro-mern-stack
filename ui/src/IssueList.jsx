@@ -7,7 +7,6 @@ import { Panel } from 'react-bootstrap';
 
 import IssueFilter from './IssueFilter.jsx';
 import IssueTable from './IssueTable.jsx';
-import IssueAdd from './IssueAdd.jsx';
 import IssueDetail from './IssueDetail.jsx';
 import graphQLFetch from './graphQLFetch.js';
 import Toast from './Toast.jsx';
@@ -22,7 +21,6 @@ export default class IssueList extends React.Component {
       toastType: 'info',
     };
 
-    this.createIssue = this.createIssue.bind(this);
     this.closeIssue = this.closeIssue.bind(this);
     this.deleteIssue = this.deleteIssue.bind(this);
     this.showSuccess = this.showSuccess.bind(this);
@@ -86,20 +84,6 @@ export default class IssueList extends React.Component {
     if (data) {
       this.setState({ issues: data.issueList });
     }
-  }
-
-  async createIssue(issue) {
-    const query = `
-      mutation issueAdd($issue: IssueInputs!) {
-        issueAdd(issue: $issue) {
-          id
-        }
-      }
-    `;
-
-    const data = await graphQLFetch(query, { issue }, this.showError);
-
-    if (data) this.loadData();
   }
 
   async closeIssue(index) {
@@ -188,11 +172,13 @@ export default class IssueList extends React.Component {
     const { issues, toastVisible, toastMessage, toastType } = this.state;
     const {
       match: { path },
+      location: { search },
     } = this.props;
+    const hasFilter = search !== '';
 
     return (
       <React.Fragment>
-        <Panel>
+        <Panel defaultExpanded={hasFilter}>
           <Panel.Heading>
             <Panel.Title toggle>Filter</Panel.Title>
           </Panel.Heading>
@@ -207,8 +193,6 @@ export default class IssueList extends React.Component {
           closeIssue={this.closeIssue}
           deleteIssue={this.deleteIssue}
         />
-
-        <IssueAdd createIssue={this.createIssue} />
 
         <Route path={`${path}/:id`} component={IssueDetail} />
 

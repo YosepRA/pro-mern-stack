@@ -6,13 +6,12 @@ import {
   NavDropdown,
   MenuItem,
   Glyphicon,
-  OverlayTrigger,
-  Tooltip,
   Grid,
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
 import Contents from './Contents.jsx';
+import IssueAddNavItem from './IssueAddNavItem.jsx';
 
 function NavBar() {
   return (
@@ -34,15 +33,7 @@ function NavBar() {
       </Nav>
 
       <Nav pullRight>
-        <NavItem>
-          <OverlayTrigger
-            delayShow={1000}
-            placement="left"
-            overlay={<Tooltip id="create-issue">Create issues</Tooltip>}
-          >
-            <Glyphicon glyph="plus" />
-          </OverlayTrigger>
-        </NavItem>
+        <IssueAddNavItem />
 
         <NavDropdown
           id="user-dropdown"
