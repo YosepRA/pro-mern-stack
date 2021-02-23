@@ -1,7 +1,6 @@
 const express = require('express');
 const proxy = require('http-proxy-middleware');
 const path = require('path');
-// const history = require('connect-history-api-fallback');
 
 require('dotenv').config();
 
@@ -22,7 +21,7 @@ if (enableHMR && process.env.NODE_ENV !== 'production') {
   const hotMiddleware = require('webpack-hot-middleware');
 
   // Modify config.
-  const config = require('./webpack.config');
+  const config = require('../webpack.config');
   config.entry.app.push('webpack-hot-middleware/client');
   config.plugins = config.plugins || [];
   config.plugins.push(new webpack.HotModuleReplacementPlugin());
@@ -33,7 +32,6 @@ if (enableHMR && process.env.NODE_ENV !== 'production') {
   app.use(hotMiddleware(compiler));
 }
 
-// app.use(history());
 app.use(express.static('./public'));
 if (apiProxyTarget) app.use('/graphql', proxy({ target: apiProxyTarget }));
 

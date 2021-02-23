@@ -4,7 +4,7 @@
   "description": "Pro MERN Stack - Vasan Subramanian - UI.",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -w uiserver.js -w .env uiserver.js",
+    "start": "nodemon -w server -w .env ./server/uiserver.js",
     "build": "webpack --mode production",
     "watch": "webpack --watch"
   },
