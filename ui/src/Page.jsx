@@ -30,6 +30,9 @@ function NavBar() {
         <LinkContainer to="/report">
           <NavItem>Report</NavItem>
         </LinkContainer>
+        <LinkContainer to="/about">
+          <NavItem>About</NavItem>
+        </LinkContainer>
       </Nav>
 
       <Nav pullRight>
