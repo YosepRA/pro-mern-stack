@@ -1,10 +1,13 @@
-const express = require('express');
-const proxy = require('http-proxy-middleware');
-const path = require('path');
+import express from 'express';
+import proxy from 'http-proxy-middleware';
+import path from 'path';
+import dotenv from 'dotenv';
+import SourceMapSupport from 'source-map-support'
 
-const render = require('./render.js');
+import render from './render.jsx';
 
-require('dotenv').config();
+dotenv.config();
+SourceMapSupport.install();
 
 const app = express();
 const port = process.env.UI_SERVER_PORT || 8000;
@@ -23,7 +26,7 @@ if (enableHMR && process.env.NODE_ENV !== 'production') {
   const hotMiddleware = require('webpack-hot-middleware');
 
   // Modify config.
-  const config = require('../webpack.config');
+  const config = require('../webpack.config')[0];
   config.entry.app.push('webpack-hot-middleware/client');
   config.plugins = config.plugins || [];
   config.plugins.push(new webpack.HotModuleReplacementPlugin());
