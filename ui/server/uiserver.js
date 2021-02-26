@@ -2,7 +2,7 @@ import express from 'express';
 import proxy from 'http-proxy-middleware';
 import path from 'path';
 import dotenv from 'dotenv';
-import SourceMapSupport from 'source-map-support'
+import SourceMapSupport from 'source-map-support';
 
 import render from './render.jsx';
 
@@ -44,7 +44,7 @@ app.get('/env.js', (req, res) => {
   res.send(`window.ENV = ${JSON.stringify(env)}`);
 });
 
-app.get('/about', render);
+app.get('/about', (req, res, next) => render(req, res, next));
 
 app.get('*', (req, res) => {
   res.sendFile(path.resolve('public/index.html'));
@@ -53,3 +53,7 @@ app.get('*', (req, res) => {
 app.listen(port, () => {
   console.log(`UI Server is listening on port ${port}...`);
 });
+
+if (module.hot) {
+  module.hot.accept('./render.jsx');
+}

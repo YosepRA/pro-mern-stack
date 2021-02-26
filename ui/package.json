@@ -4,10 +4,11 @@
   "description": "Pro MERN Stack - Vasan Subramanian - UI.",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -w dist -w .env ./dist/server.js",
+    "start": "node ./dist/server.js",
     "build": "webpack --mode production",
-    "watch": "webpack --watch",
-    "lint": "eslint src browser server --ext js,jsx"
+    "watch-server-hmr": "webpack -w --config ./webpack.serverHMR.js",
+    "lint": "eslint src browser server --ext js,jsx",
+    "dev-all": "rm dist/* && npm run watch-server-hmr"
   },
   "repository": {
     "type": "git",
@@ -34,6 +35,7 @@
     "webpack-cli": "^3.3.12",
     "webpack-dev-middleware": "^3.7.3",
     "webpack-hot-middleware": "^2.25.0",
+    "webpack-merge": "^4.2.2",
     "webpack-node-externals": "^1.7.2"
   },
   "dependencies": {
