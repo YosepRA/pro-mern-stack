@@ -1,3 +1,5 @@
+import fetch from 'isomorphic-fetch';
+
 const datePattern = /^\d\d\d\d-\d\d-\d\d/;
 
 function jsonDateReviver(key, value) {
@@ -10,8 +12,13 @@ export default async function graphQLFetch(
   variables = {},
   showError = null
 ) {
+  // eslint-disable-next-line no-undef
+  const apiEndpoint = __isBrowser__
+    ? window.ENV.UI_API_ENDPOINT
+    : process.env.UI_SERVER_API_ENDPOINT;
+
   try {
-    const response = await fetch(`${window.ENV.UI_API_ENDPOINT}/graphql`, {
+    const response = await fetch(apiEndpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query, variables }),

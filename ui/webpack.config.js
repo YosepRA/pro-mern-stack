@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
 
 const browserConfig = {
@@ -44,6 +45,11 @@ const browserConfig = {
     },
   },
   devtool: 'source-map',
+  plugins: [
+    new webpack.DefinePlugin({
+      __isBrowser__: 'true',
+    }),
+  ],
 };
 
 const serverConfig = {
@@ -78,6 +84,11 @@ const serverConfig = {
     ],
   },
   devtool: 'source-map',
+  plugins: [
+    new webpack.DefinePlugin({
+      __isBrowser__: 'false',
+    }),
+  ],
 };
 
 module.exports = [browserConfig, serverConfig];

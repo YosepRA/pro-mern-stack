@@ -1,4 +1,4 @@
-let aboutMessage = 'Pretend that this is a meaningful message.';
+let aboutMessage = 'Issue Tracker API v1.0';
 
 function getMessage() {
   return aboutMessage;

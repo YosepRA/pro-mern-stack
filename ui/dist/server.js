@@ -22,7 +22,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "fb9c4776841a01694d5a";
+/******/ 	var hotCurrentHash = "112e316da824db99ed24";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -990,7 +990,6 @@ if (true) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return render; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_dom_server__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom/server */ "react-dom/server");
@@ -999,12 +998,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_router_dom__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _src_Page_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../src/Page.jsx */ "./src/Page.jsx");
 /* harmony import */ var _template_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./template.js */ "./server/template.js");
+/* harmony import */ var _src_store_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../src/store.js */ "./src/store.js");
+/* harmony import */ var _src_graphQLFetch_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../src/graphQLFetch.js */ "./src/graphQLFetch.js");
 
 
 
 
 
-function render(req, res) {
+
+
+
+async function render(req, res) {
+  const initialData = await Object(_src_graphQLFetch_js__WEBPACK_IMPORTED_MODULE_6__["default"])('query{about}');
+  _src_store_js__WEBPACK_IMPORTED_MODULE_5__["default"].initialData = initialData;
   const element = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["StaticRouter"], {
     location: req.url,
     context: {}
@@ -1012,6 +1018,8 @@ function render(req, res) {
   const body = react_dom_server__WEBPACK_IMPORTED_MODULE_1___default.a.renderToString(element);
   res.send(Object(_template_js__WEBPACK_IMPORTED_MODULE_4__["default"])(body));
 }
+
+/* harmony default export */ __webpack_exports__["default"] = (render);
 
 /***/ }),
 
@@ -1089,11 +1097,9 @@ __webpack_require__.r(__webpack_exports__);
 dotenv__WEBPACK_IMPORTED_MODULE_3___default.a.config();
 source_map_support__WEBPACK_IMPORTED_MODULE_4___default.a.install();
 const app = express__WEBPACK_IMPORTED_MODULE_0___default()();
-const port = process.env.UI_SERVER_PORT || 8000;
-const UI_API_ENDPOINT = process.env.UI_API_ENDPOINT || 'http://localhost:3000';
-const env = {
-  UI_API_ENDPOINT
-};
+const port = process.env.UI_SERVER_PORT || 8000; // const UI_API_ENDPOINT = process.env.UI_API_ENDPOINT || 'http://localhost:3000';
+// const env = { UI_API_ENDPOINT };
+
 const apiProxyTarget = process.env.API_PROXY_TARGET; // Webpack Hot Module Replacement configuration.
 
 const enableHMR = (process.env.ENABLE_HMR || 'true') === 'true';
@@ -1125,8 +1131,20 @@ if (enableHMR && "development" !== 'production') {
 app.use(express__WEBPACK_IMPORTED_MODULE_0___default.a.static('./public'));
 if (apiProxyTarget) app.use('/graphql', http_proxy_middleware__WEBPACK_IMPORTED_MODULE_1___default()({
   target: apiProxyTarget
-}));
+})); // API endpoint setup.
+
+if (!process.env.UI_API_ENDPOINT) {
+  process.env.UI_API_ENDPOINT = 'http://localhost:3000/graphql';
+}
+
+if (!process.env.UI_SERVER_API_ENDPOINT) {
+  process.env.UI_SERVER_API_ENDPOINT = process.env.UI_API_ENDPOINT;
+}
+
 app.get('/env.js', (req, res) => {
+  const env = {
+    UI_API_ENDPOINT: process.env.UI_API_ENDPOINT
+  };
   res.send(`window.ENV = ${JSON.stringify(env)}`);
 });
 app.get('/about', (req, res, next) => Object(_render_jsx__WEBPACK_IMPORTED_MODULE_5__["default"])(req, res, next));
@@ -1156,11 +1174,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return About; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _store_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./store.js */ "./src/store.js");
+
 
 function About() {
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "text-center"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Issue Tracker version 0.9"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", null, "API version 1.0"));
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", null, _store_js__WEBPACK_IMPORTED_MODULE_1__["default"].initialData ? _store_js__WEBPACK_IMPORTED_MODULE_1__["default"].initialData.about : 'unknown'));
 }
 
 /***/ }),
@@ -2821,6 +2841,9 @@ class Toast extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return graphQLFetch; });
+/* harmony import */ var isomorphic_fetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! isomorphic-fetch */ "isomorphic-fetch");
+/* harmony import */ var isomorphic_fetch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(isomorphic_fetch__WEBPACK_IMPORTED_MODULE_0__);
+
 const datePattern = /^\d\d\d\d-\d\d-\d\d/;
 
 function jsonDateReviver(key, value) {
@@ -2829,8 +2852,11 @@ function jsonDateReviver(key, value) {
 }
 
 async function graphQLFetch(query, variables = {}, showError = null) {
+  // eslint-disable-next-line no-undef
+  const apiEndpoint =  false ? undefined : process.env.UI_SERVER_API_ENDPOINT;
+
   try {
-    const response = await fetch(`${window.ENV.UI_API_ENDPOINT}/graphql`, {
+    const response = await isomorphic_fetch__WEBPACK_IMPORTED_MODULE_0___default()(apiEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -2866,6 +2892,20 @@ async function graphQLFetch(query, variables = {}, showError = null) {
 
 /***/ }),
 
+/***/ "./src/store.js":
+/*!**********************!*\
+  !*** ./src/store.js ***!
+  \**********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const store = {};
+/* harmony default export */ __webpack_exports__["default"] = (store);
+
+/***/ }),
+
 /***/ "./webpack.config.js":
 /*!***************************!*\
   !*** ./webpack.config.js ***!
@@ -2874,6 +2914,8 @@ async function graphQLFetch(query, variables = {}, showError = null) {
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(__dirname) {const path = __webpack_require__(/*! path */ "path");
+
+const webpack = __webpack_require__(/*! webpack */ "webpack");
 
 const nodeExternals = __webpack_require__(/*! webpack-node-externals */ "webpack-node-externals");
 
@@ -2913,7 +2955,10 @@ const browserConfig = {
       chunks: 'all'
     }
   },
-  devtool: 'source-map'
+  devtool: 'source-map',
+  plugins: [new webpack.DefinePlugin({
+    __isBrowser__: 'true'
+  })]
 };
 const serverConfig = {
   mode: 'development',
@@ -2942,7 +2987,10 @@ const serverConfig = {
       }
     }]
   },
-  devtool: 'source-map'
+  devtool: 'source-map',
+  plugins: [new webpack.DefinePlugin({
+    __isBrowser__: 'false'
+  })]
 };
 module.exports = [browserConfig, serverConfig];
 /* WEBPACK VAR INJECTION */}.call(this, "/"))
@@ -2992,6 +3040,17 @@ module.exports = require("express");
 /***/ (function(module, exports) {
 
 module.exports = require("http-proxy-middleware");
+
+/***/ }),
+
+/***/ "isomorphic-fetch":
+/*!***********************************!*\
+  !*** external "isomorphic-fetch" ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("isomorphic-fetch");
 
 /***/ }),
 
