@@ -22,7 +22,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "8d73825fd2554de1c672";
+/******/ 	var hotCurrentHash = "43e00878fcb110fc7570";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -997,9 +997,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-router-dom */ "react-router-dom");
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_router_dom__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _src_Page_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../src/Page.jsx */ "./src/Page.jsx");
-/* harmony import */ var _template_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./template.js */ "./server/template.js");
-/* harmony import */ var _src_store_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../src/store.js */ "./src/store.js");
-/* harmony import */ var _src_graphQLFetch_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../src/graphQLFetch.js */ "./src/graphQLFetch.js");
+/* harmony import */ var _src_About_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../src/About.jsx */ "./src/About.jsx");
+/* harmony import */ var _template_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./template.js */ "./server/template.js");
+/* harmony import */ var _src_store_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../src/store.js */ "./src/store.js");
 
 
 
@@ -1009,14 +1009,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 async function render(req, res) {
-  const initialData = await Object(_src_graphQLFetch_js__WEBPACK_IMPORTED_MODULE_6__["default"])('query{about}');
-  _src_store_js__WEBPACK_IMPORTED_MODULE_5__["default"].initialData = initialData;
+  const initialData = await _src_About_jsx__WEBPACK_IMPORTED_MODULE_4__["default"].fetchData();
+  _src_store_js__WEBPACK_IMPORTED_MODULE_6__["default"].initialData = initialData;
   const element = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["StaticRouter"], {
     location: req.url,
     context: {}
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_src_Page_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], null));
   const body = react_dom_server__WEBPACK_IMPORTED_MODULE_1___default.a.renderToString(element);
-  res.send(Object(_template_js__WEBPACK_IMPORTED_MODULE_4__["default"])(body, initialData));
+  res.send(Object(_template_js__WEBPACK_IMPORTED_MODULE_5__["default"])(body, initialData));
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (render);
@@ -1176,12 +1176,46 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _store_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./store.js */ "./src/store.js");
+/* harmony import */ var _graphQLFetch_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./graphQLFetch.js */ "./src/graphQLFetch.js");
 
 
-function About() {
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
-    className: "text-center"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", null, _store_js__WEBPACK_IMPORTED_MODULE_1__["default"].initialData ? _store_js__WEBPACK_IMPORTED_MODULE_1__["default"].initialData.about : 'unknown'));
+
+class About extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
+  static async fetchData() {
+    const data = await Object(_graphQLFetch_js__WEBPACK_IMPORTED_MODULE_2__["default"])('query { about }');
+    return data;
+  }
+
+  constructor() {
+    super();
+    const apiAbout = _store_js__WEBPACK_IMPORTED_MODULE_1__["default"].initialData ? _store_js__WEBPACK_IMPORTED_MODULE_1__["default"].initialData.about : null;
+    this.state = {
+      apiAbout
+    };
+  }
+
+  async componentDidMount() {
+    const {
+      apiAbout
+    } = this.state;
+
+    if (apiAbout == null) {
+      const data = await About.fetchData();
+      this.setState({
+        apiAbout: data.about
+      });
+    }
+  }
+
+  render() {
+    const {
+      apiAbout
+    } = this.state;
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+      className: "text-center"
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "Issue Tracker version 0.9"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h4", null, apiAbout));
+  }
+
 }
 
 /***/ }),
