@@ -22,7 +22,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "112e316da824db99ed24";
+/******/ 	var hotCurrentHash = "8d73825fd2554de1c672";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1016,7 +1016,7 @@ async function render(req, res) {
     context: {}
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_src_Page_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], null));
   const body = react_dom_server__WEBPACK_IMPORTED_MODULE_1___default.a.renderToString(element);
-  res.send(Object(_template_js__WEBPACK_IMPORTED_MODULE_4__["default"])(body));
+  res.send(Object(_template_js__WEBPACK_IMPORTED_MODULE_4__["default"])(body, initialData));
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (render);
@@ -1033,7 +1033,7 @@ async function render(req, res) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return template; });
-function template(body) {
+function template(body, data) {
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -1058,6 +1058,7 @@ function template(body) {
       <body>
         <div id="content">${body}</div>
 
+        <script>window.__INITIAL_DATA__ = ${JSON.stringify(data)}</script>
         <script src="/env.js"></script>
         <script src="/vendor.bundle.js"></script>
         <script src="/app.bundle.js"></script>

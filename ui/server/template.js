@@ -1,4 +1,4 @@
-export default function template(body) {
+export default function template(body, data) {
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -23,6 +23,7 @@ export default function template(body) {
       <body>
         <div id="content">${body}</div>
 
+        <script>window.__INITIAL_DATA__ = ${JSON.stringify(data)}</script>
         <script src="/env.js"></script>
         <script src="/vendor.bundle.js"></script>
         <script src="/app.bundle.js"></script>
