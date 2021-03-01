@@ -12,6 +12,8 @@ export default class About extends Component {
   constructor() {
     super();
     const apiAbout = store.initialData ? store.initialData.about : null;
+    delete store.initialData;
+
     this.state = { apiAbout };
   }
 

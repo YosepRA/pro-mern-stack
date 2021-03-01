@@ -22,7 +22,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "0e71246d0a0ba9c2216b";
+/******/ 	var hotCurrentHash = "ac202f16713686694778";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1013,7 +1013,8 @@ async function render(req, res) {
   const activeRoute = _src_routes_js__WEBPACK_IMPORTED_MODULE_6__["default"].find(route => Object(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["matchPath"])(req.path, route));
 
   if (activeRoute && activeRoute.component.fetchData) {
-    initialData = await activeRoute.component.fetchData();
+    const match = Object(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["matchPath"])(req.path, activeRoute);
+    initialData = await activeRoute.component.fetchData(match);
   }
 
   _src_store_js__WEBPACK_IMPORTED_MODULE_5__["default"].initialData = initialData;
@@ -1039,6 +1040,9 @@ async function render(req, res) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return template; });
+/* harmony import */ var serialize_javascript__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! serialize-javascript */ "serialize-javascript");
+/* harmony import */ var serialize_javascript__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(serialize_javascript__WEBPACK_IMPORTED_MODULE_0__);
+
 function template(body, data) {
   return `
     <!DOCTYPE html>
@@ -1064,7 +1068,7 @@ function template(body, data) {
       <body>
         <div id="content">${body}</div>
 
-        <script>window.__INITIAL_DATA__ = ${JSON.stringify(data)}</script>
+        <script>window.__INITIAL_DATA__ = ${serialize_javascript__WEBPACK_IMPORTED_MODULE_0___default()(data)}</script>
         <script src="/env.js"></script>
         <script src="/vendor.bundle.js"></script>
         <script src="/app.bundle.js"></script>
@@ -1189,6 +1193,7 @@ class About extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   constructor() {
     super();
     const apiAbout = _store_js__WEBPACK_IMPORTED_MODULE_1__["default"].initialData ? _store_js__WEBPACK_IMPORTED_MODULE_1__["default"].initialData.about : null;
+    delete _store_js__WEBPACK_IMPORTED_MODULE_1__["default"].initialData;
     this.state = {
       apiAbout
     };
@@ -1645,6 +1650,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DateInput_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./DateInput.jsx */ "./src/DateInput.jsx");
 /* harmony import */ var _TextInput_jsx__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./TextInput.jsx */ "./src/TextInput.jsx");
 /* harmony import */ var _Toast_jsx__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Toast.jsx */ "./src/Toast.jsx");
+/* harmony import */ var _store_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./store.js */ "./src/store.js");
+
 
 
 
@@ -1655,10 +1662,38 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class IssueEdit extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
+  static async fetchData(match, showError) {
+    const query = `
+      query issue($id: Int!) {
+        issue(id: $id) {
+          id
+          title
+          status
+          owner
+          effort
+          created
+          due
+          description
+        }
+      }
+    `;
+    const {
+      params: {
+        id
+      }
+    } = match;
+    const data = await Object(_graphQLFetch_js__WEBPACK_IMPORTED_MODULE_4__["default"])(query, {
+      id
+    }, showError);
+    return data;
+  }
+
   constructor() {
     super();
+    const issue = _store_js__WEBPACK_IMPORTED_MODULE_9__["default"].initialData ? _store_js__WEBPACK_IMPORTED_MODULE_9__["default"].initialData.issue : null;
+    delete _store_js__WEBPACK_IMPORTED_MODULE_9__["default"].intiialData;
     this.state = {
-      issue: {},
+      issue,
       invalidFields: {},
       showingValidation: false,
       toastVisible: false,
@@ -1675,7 +1710,10 @@ class IssueEdit extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   }
 
   componentDidMount() {
-    this.loadData();
+    const {
+      issue
+    } = this.state;
+    if (issue == null) this.loadData();
   }
 
   componentDidUpdate(prevProps) {
@@ -1780,30 +1818,10 @@ class IssueEdit extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   }
 
   async loadData() {
-    const query = `
-      query issue($id: Int!) {
-        issue(id: $id) {
-          id
-          title
-          status
-          owner
-          effort
-          created
-          due
-          description
-        }
-      }
-    `;
     const {
-      match: {
-        params: {
-          id
-        }
-      }
+      match
     } = this.props;
-    const data = await Object(_graphQLFetch_js__WEBPACK_IMPORTED_MODULE_4__["default"])(query, {
-      id
-    }, this.showError);
+    const data = await IssueEdit.fetchData(match, this.showError);
     this.setState({
       issue: data ? data.issue : {},
       invalidFields: {}
@@ -1833,6 +1851,10 @@ class IssueEdit extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   }
 
   render() {
+    const {
+      issue
+    } = this.state;
+    if (issue == null) return null;
     const {
       issue: {
         id
@@ -3191,6 +3213,17 @@ module.exports = require("react-router-bootstrap");
 /***/ (function(module, exports) {
 
 module.exports = require("react-router-dom");
+
+/***/ }),
+
+/***/ "serialize-javascript":
+/*!***************************************!*\
+  !*** external "serialize-javascript" ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("serialize-javascript");
 
 /***/ }),
 
