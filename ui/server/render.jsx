@@ -12,7 +12,9 @@ async function render(req, res) {
   const activeRoute = routes.find(route => matchPath(req.path, route));
   if (activeRoute && activeRoute.component.fetchData) {
     const match = matchPath(req.path, activeRoute);
-    initialData = await activeRoute.component.fetchData(match);
+    const index = req.url.indexOf('?');
+    const search = index !== -1 ? req.url.substring(index) : null;
+    initialData = await activeRoute.component.fetchData(match, search);
   }
   store.initialData = initialData;
 

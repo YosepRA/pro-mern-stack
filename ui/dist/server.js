@@ -22,7 +22,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "ac202f16713686694778";
+/******/ 	var hotCurrentHash = "4a3d844e81f22dfe0070";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1014,7 +1014,9 @@ async function render(req, res) {
 
   if (activeRoute && activeRoute.component.fetchData) {
     const match = Object(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["matchPath"])(req.path, activeRoute);
-    initialData = await activeRoute.component.fetchData(match);
+    const index = req.url.indexOf('?');
+    const search = index !== -1 ? req.url.substring(index) : null;
+    initialData = await activeRoute.component.fetchData(match, search);
   }
 
   _src_store_js__WEBPACK_IMPORTED_MODULE_5__["default"].initialData = initialData;
@@ -1662,7 +1664,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class IssueEdit extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
-  static async fetchData(match, showError) {
+  static async fetchData(match, search, showError) {
     const query = `
       query issue($id: Int!) {
         issue(id: $id) {
@@ -1821,7 +1823,7 @@ class IssueEdit extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     const {
       match
     } = this.props;
-    const data = await IssueEdit.fetchData(match, this.showError);
+    const data = await IssueEdit.fetchData(match, null, this.showError);
     this.setState({
       issue: data ? data.issue : {},
       invalidFields: {}
@@ -2244,6 +2246,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _IssueDetail_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./IssueDetail.jsx */ "./src/IssueDetail.jsx");
 /* harmony import */ var _graphQLFetch_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./graphQLFetch.js */ "./src/graphQLFetch.js");
 /* harmony import */ var _Toast_jsx__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Toast.jsx */ "./src/Toast.jsx");
+/* harmony import */ var _store_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./store.js */ "./src/store.js");
 /* eslint-disable react/jsx-no-undef */
 
 
@@ -2254,47 +2257,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 class IssueList extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
-  constructor() {
-    super();
-    this.state = {
-      issues: [],
-      toastVisible: false,
-      toastMessage: '',
-      toastType: 'info'
-    };
-    this.closeIssue = this.closeIssue.bind(this);
-    this.deleteIssue = this.deleteIssue.bind(this);
-    this.showSuccess = this.showSuccess.bind(this);
-    this.showError = this.showError.bind(this);
-    this.dismissToast = this.dismissToast.bind(this);
-  }
-
-  componentDidMount() {
-    this.loadData();
-  }
-
-  componentDidUpdate(prevProps) {
-    const {
-      location: {
-        search: prevSearch
-      }
-    } = prevProps;
-    const {
-      location: {
-        search
-      }
-    } = this.props; // Comparing previous search value with the current one, and only refresh if they're different.
-
-    if (prevSearch !== search) this.loadData();
-  }
-
-  async loadData() {
-    const {
-      location: {
-        search
-      }
-    } = this.props;
+  static async fetchData(match, search, showError) {
     const params = new url_search_params__WEBPACK_IMPORTED_MODULE_1___default.a(search);
     const vars = {}; // Status filter.
 
@@ -2325,7 +2290,56 @@ class IssueList extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
         }
       }
     `;
-    const data = await Object(_graphQLFetch_js__WEBPACK_IMPORTED_MODULE_7__["default"])(query, vars, this.showError);
+    const data = await Object(_graphQLFetch_js__WEBPACK_IMPORTED_MODULE_7__["default"])(query, vars, showError);
+    return data;
+  }
+
+  constructor() {
+    super();
+    const issues = _store_js__WEBPACK_IMPORTED_MODULE_9__["default"].initialData ? _store_js__WEBPACK_IMPORTED_MODULE_9__["default"].initialData.issueList : null;
+    delete _store_js__WEBPACK_IMPORTED_MODULE_9__["default"].initialData;
+    this.state = {
+      issues,
+      toastVisible: false,
+      toastMessage: '',
+      toastType: 'info'
+    };
+    this.closeIssue = this.closeIssue.bind(this);
+    this.deleteIssue = this.deleteIssue.bind(this);
+    this.showSuccess = this.showSuccess.bind(this);
+    this.showError = this.showError.bind(this);
+    this.dismissToast = this.dismissToast.bind(this);
+  }
+
+  componentDidMount() {
+    const {
+      issues
+    } = this.state;
+    if (issues == null) this.loadData();
+  }
+
+  componentDidUpdate(prevProps) {
+    const {
+      location: {
+        search: prevSearch
+      }
+    } = prevProps;
+    const {
+      location: {
+        search
+      }
+    } = this.props; // Comparing previous search value with the current one, and only refresh if they're different.
+
+    if (prevSearch !== search) this.loadData();
+  }
+
+  async loadData() {
+    const {
+      location: {
+        search
+      }
+    } = this.props;
+    const data = await IssueList.fetchData(null, search, this.showError);
 
     if (data) {
       this.setState({
@@ -2439,6 +2453,7 @@ class IssueList extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       toastMessage,
       toastType
     } = this.state;
+    if (issues == null) return null;
     const {
       match: {
         path
