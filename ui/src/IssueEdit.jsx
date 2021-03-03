@@ -17,10 +17,10 @@ import graphQLFetch from './graphQLFetch.js';
 import NumInput from './NumInput.jsx';
 import DateInput from './DateInput.jsx';
 import TextInput from './TextInput.jsx';
-import Toast from './Toast.jsx';
 import store from './store.js';
+import withToast from './withToast.jsx';
 
-export default class IssueEdit extends Component {
+class IssueEdit extends Component {
   static async fetchData(match, search, showError) {
     const query = `
       query issue($id: Int!) {
@@ -54,18 +54,12 @@ export default class IssueEdit extends Component {
       issue,
       invalidFields: {},
       showingValidation: false,
-      toastVisible: false,
-      toastMessage: '',
-      toastType: 'success',
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onValidityChange = this.onValidityChange.bind(this);
     this.dismissValidation = this.dismissValidation.bind(this);
-    this.showSuccess = this.showSuccess.bind(this);
-    this.showError = this.showError.bind(this);
-    this.dismissToast = this.dismissToast.bind(this);
   }
 
   componentDidMount() {
@@ -114,6 +108,7 @@ export default class IssueEdit extends Component {
     event.preventDefault();
     this.showValidation();
     const { issue, invalidFields } = this.state;
+    const { showError, showSuccess } = this.props;
     if (Object.keys(invalidFields).length !== 0) return;
 
     const query = `
@@ -131,10 +126,10 @@ export default class IssueEdit extends Component {
       }
     `;
     const { id, created, ...changes } = issue;
-    const data = await graphQLFetch(query, { id, changes }, this.showError);
+    const data = await graphQLFetch(query, { id, changes }, showError);
     if (data) {
       this.setState({ issue: data.issueUpdate });
-      this.showSuccess('Updated issue successfully');
+      showSuccess('Updated issue successfully');
     }
   }
 
@@ -147,30 +142,10 @@ export default class IssueEdit extends Component {
   }
 
   async loadData() {
-    const { match } = this.props;
-    const data = await IssueEdit.fetchData(match, null, this.showError);
+    const { match, showError } = this.props;
+    const data = await IssueEdit.fetchData(match, null, showError);
 
     this.setState({ issue: data ? data.issue : {}, invalidFields: {} });
-  }
-
-  showSuccess(message) {
-    this.setState({
-      toastVisible: true,
-      toastMessage: message,
-      toastType: 'success',
-    });
-  }
-
-  showError(message) {
-    this.setState({
-      toastVisible: true,
-      toastMessage: message,
-      toastType: 'danger',
-    });
-  }
-
-  dismissToast() {
-    this.setState({ toastVisible: false });
   }
 
   render() {
@@ -360,15 +335,12 @@ export default class IssueEdit extends Component {
           {' | '}
           <Link to={`/edit/${id + 1}`}>Next</Link>
         </Panel.Footer>
-
-        <Toast
-          showing={toastVisible}
-          onDismiss={this.dismissToast}
-          bsStyle={toastType}
-        >
-          {toastMessage}
-        </Toast>
       </Panel>
     );
   }
 }
+
+const IssueEditWithToast = withToast(IssueEdit);
+IssueEditWithToast.fetchData = IssueEdit.fetchData;
+
+export default IssueEditWithToast;
