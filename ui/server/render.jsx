@@ -9,6 +9,7 @@ import routes from '../src/routes.js';
 
 async function render(req, res) {
   let initialData;
+  const context = {};
   const activeRoute = routes.find(route => matchPath(req.path, route));
   if (activeRoute && activeRoute.component.fetchData) {
     const match = matchPath(req.path, activeRoute);
@@ -19,12 +20,17 @@ async function render(req, res) {
   store.initialData = initialData;
 
   const element = (
-    <StaticRouter location={req.url} context={{}}>
+    <StaticRouter location={req.url} context={context}>
       <Page />
     </StaticRouter>
   );
   const body = ReactDOMServer.renderToString(element);
-  res.send(template(body, initialData));
+
+  if (context.url) {
+    res.redirect(301, context.url);
+  } else {
+    res.send(template(body, initialData));
+  }
 }
 
 export default render;

@@ -8,7 +8,7 @@
     "build": "webpack --mode production",
     "watch-server-hmr": "webpack -w --config ./webpack.serverHMR.js",
     "lint": "eslint src browser server --ext js,jsx",
-    "dev-all": "rm dist/* && npm run watch-server-hmr"
+    "dev": "rm dist/* && npm run watch-server-hmr"
   },
   "repository": {
     "type": "git",
