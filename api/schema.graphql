@@ -46,11 +46,21 @@ type IssueCounts {
   Closed: Int
 }
 
+type IssueListWithPage {
+  issues: [Issue!]!
+  pages: Int
+}
+
 ### Top level declarations.
 
 type Query {
   about: String!
-  issueList(status: StatusType, effortMin: Int, effortMax: Int): [Issue!]!
+  issueList(
+    status: StatusType
+    effortMin: Int
+    effortMax: Int
+    page: Int = 1
+  ): IssueListWithPage
   issue(id: Int!): Issue!
   issueCounts(
     status: StatusType

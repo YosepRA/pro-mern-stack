@@ -22,7 +22,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "9a1cb93290cba025c66e";
+/******/ 	var hotCurrentHash = "f241ceb9a2f2dd569e9e";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -2166,13 +2166,15 @@ class IssueList extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
           effortMin: $effortMin
           effortMax: $effortMax
         ) {
-          id
-          title
-          status
-          owner
-          created
-          effort
-          due
+          issues {
+            id
+            title
+            status
+            owner
+            created
+            effort
+            due
+          }
         }
 
         issue(id: $selectedId) @include (if : $hasSelected) {
@@ -2187,7 +2189,7 @@ class IssueList extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
 
   constructor() {
     super();
-    const issues = _store_js__WEBPACK_IMPORTED_MODULE_7__["default"].initialData ? _store_js__WEBPACK_IMPORTED_MODULE_7__["default"].initialData.issueList : null;
+    const issues = _store_js__WEBPACK_IMPORTED_MODULE_7__["default"].initialData ? _store_js__WEBPACK_IMPORTED_MODULE_7__["default"].initialData.issueList.issues : null;
     const selectedIssue = _store_js__WEBPACK_IMPORTED_MODULE_7__["default"].initialData ? _store_js__WEBPACK_IMPORTED_MODULE_7__["default"].initialData.issue : null;
     delete _store_js__WEBPACK_IMPORTED_MODULE_7__["default"].initialData;
     this.state = {
@@ -2242,7 +2244,7 @@ class IssueList extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
 
     if (data) {
       this.setState({
-        issues: data.issueList,
+        issues: data.issueList.issues,
         selectedIssue: data.issue
       });
     }
