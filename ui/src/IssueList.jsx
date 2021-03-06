@@ -2,7 +2,8 @@
 
 import React from 'react';
 import URLSearchParams from 'url-search-params';
-import { Panel } from 'react-bootstrap';
+import { Panel, Pagination } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 
 import IssueFilter from './IssueFilter.jsx';
 import IssueTable from './IssueTable.jsx';
@@ -10,6 +11,22 @@ import IssueDetail from './IssueDetail.jsx';
 import graphQLFetch from './graphQLFetch.js';
 import store from './store.js';
 import withToast from './withToast.jsx';
+
+const PAGE_SIZE = 5;
+
+function PageLink({ params, page, activePage, children }) {
+  params.set('page', page);
+  if (page === 0) return React.cloneElement(children, { disabled: true });
+
+  return (
+    <LinkContainer
+      isActive={() => activePage === page}
+      to={{ pathname: '/issues', search: `?${params.toString()}` }}
+    >
+      {children}
+    </LinkContainer>
+  );
+}
 
 class IssueList extends React.Component {
   static async fetchData(match, search, showError) {
@@ -25,6 +42,10 @@ class IssueList extends React.Component {
     if (!Number.isNaN(effortMin)) vars.effortMin = effortMin;
     const effortMax = parseInt(params.get('effortMax'), 10);
     if (!Number.isNaN(effortMax)) vars.effortMax = effortMax;
+    // Page query.
+    let page = parseInt(params.get('page'), 10);
+    if (Number.isNaN(page)) page = 1;
+    vars.page = page;
 
     // Issue detail query.
     const {
@@ -41,6 +62,7 @@ class IssueList extends React.Component {
         $status: StatusType
         $effortMin: Int
         $effortMax: Int
+        $page: Int
         $hasSelected: Boolean!
         $selectedId: Int!
       ) {
@@ -48,6 +70,7 @@ class IssueList extends React.Component {
           status: $status
           effortMin: $effortMin
           effortMax: $effortMax
+          page: $page
         ) {
           issues {
             id
@@ -58,6 +81,8 @@ class IssueList extends React.Component {
             effort
             due
           }
+
+          pages
         }
 
         issue(id: $selectedId) @include (if : $hasSelected) {
@@ -74,15 +99,17 @@ class IssueList extends React.Component {
   constructor() {
     super();
 
-    const issues = store.initialData
-      ? store.initialData.issueList.issues
-      : null;
-    const selectedIssue = store.initialData ? store.initialData.issue : null;
+    const initialData = store.initialData || { issueList: {} };
+    const {
+      issueList: { issues, pages },
+      issue: selectedIssue,
+    } = initialData;
     delete store.initialData;
 
     this.state = {
       issues,
       selectedIssue,
+      pages,
     };
 
     this.closeIssue = this.closeIssue.bind(this);
@@ -121,9 +148,15 @@ class IssueList extends React.Component {
 
     const data = await IssueList.fetchData(match, search, showError);
     if (data) {
+      const {
+        issueList: { issues, pages },
+        issue: selectedIssue,
+      } = data;
+
       this.setState({
-        issues: data.issueList.issues,
-        selectedIssue: data.issue,
+        issues,
+        pages,
+        selectedIssue,
       });
     }
   }
@@ -190,7 +223,7 @@ class IssueList extends React.Component {
   }
 
   render() {
-    const { issues, selectedIssue } = this.state;
+    const { issues, selectedIssue, pages } = this.state;
 
     if (issues == null) return null;
 
@@ -198,6 +231,26 @@ class IssueList extends React.Component {
       location: { search },
     } = this.props;
     const hasFilter = search !== '';
+
+    // Pagination build-up.
+    const params = new URLSearchParams(search);
+    let page = parseInt(params.get('page'), 10);
+    if (Number.isNaN(page)) page = 1;
+
+    const startPage = Math.floor((page - 1) / PAGE_SIZE) * PAGE_SIZE + 1;
+    const endPage = startPage + PAGE_SIZE - 1;
+    const prevSection = page === 1 ? 0 : startPage - PAGE_SIZE;
+    const nextSection = endPage >= pages ? 0 : startPage + PAGE_SIZE;
+
+    const items = [];
+    for (let i = startPage; i <= Math.min(endPage, pages); i += 1) {
+      params.set('page', i);
+      items.push(
+        <PageLink key={i} params={params} page={i} activePage={page}>
+          <Pagination.Item>{i}</Pagination.Item>
+        </PageLink>
+      );
+    }
 
     return (
       <React.Fragment>
@@ -218,6 +271,18 @@ class IssueList extends React.Component {
         />
 
         <IssueDetail issue={selectedIssue} />
+
+        <Pagination>
+          <PageLink params={params} page={prevSection}>
+            <Pagination.Item>{'<'}</Pagination.Item>
+          </PageLink>
+
+          {items}
+
+          <PageLink params={params} page={nextSection}>
+            <Pagination.Item>{'>'}</Pagination.Item>
+          </PageLink>
+        </Pagination>
       </React.Fragment>
     );
   }
