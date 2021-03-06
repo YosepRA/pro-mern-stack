@@ -75,7 +75,7 @@ class IssueFilter extends React.Component {
   }
 
   applyFilter() {
-    const { history } = this.props;
+    const { history, urlBase } = this.props;
     const { status, effortMin, effortMax } = this.state;
 
     const params = new URLSearchParams();
@@ -85,7 +85,7 @@ class IssueFilter extends React.Component {
 
     const search = params.toString() ? `?${params.toString()}` : '';
     history.push({
-      pathname: '/issues',
+      pathname: urlBase,
       search,
     });
   }

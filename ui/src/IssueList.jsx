@@ -200,7 +200,7 @@ class IssueList extends React.Component {
           </Panel.Heading>
 
           <Panel.Body collapsible>
-            <IssueFilter />
+            <IssueFilter urlBase="/issues" />
           </Panel.Body>
         </Panel>
 
