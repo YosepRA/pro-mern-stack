@@ -17,7 +17,7 @@ function validate(issue) {
   }
 }
 
-async function list(_, { status, effortMin, effortMax, page }) {
+async function list(_, { status, effortMin, effortMax, page, search }) {
   const db = getDB();
   // Fill up the filter along the way.
   const filter = {};
@@ -33,6 +33,8 @@ async function list(_, { status, effortMin, effortMax, page }) {
     if (effortMax !== undefined) rangeFilter.effort.$lte = effortMax;
     filter.$or.push(rangeFilter);
   }
+  // Search filter.
+  if (search) filter.$text = { $search: search };
 
   const cursor = await db
     .collection('issues')

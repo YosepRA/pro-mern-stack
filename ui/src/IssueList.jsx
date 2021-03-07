@@ -12,7 +12,7 @@ import graphQLFetch from './graphQLFetch.js';
 import store from './store.js';
 import withToast from './withToast.jsx';
 
-const PAGE_SIZE = 5;
+const PAGE_COUNT = 5;
 
 function PageLink({ params, page, activePage, children }) {
   params.set('page', page);
@@ -262,10 +262,10 @@ class IssueList extends React.Component {
     let page = parseInt(params.get('page'), 10);
     if (Number.isNaN(page)) page = 1;
 
-    const startPage = Math.floor((page - 1) / PAGE_SIZE) * PAGE_SIZE + 1;
-    const endPage = startPage + PAGE_SIZE - 1;
-    const prevSection = page === 1 ? 0 : startPage - PAGE_SIZE;
-    const nextSection = endPage >= pages ? 0 : startPage + PAGE_SIZE;
+    const startPage = Math.floor((page - 1) / PAGE_COUNT) * PAGE_COUNT + 1;
+    const endPage = startPage + PAGE_COUNT - 1;
+    const prevSection = page === 1 ? 0 : startPage - PAGE_COUNT;
+    const nextSection = endPage >= pages ? 0 : startPage + PAGE_COUNT;
 
     const items = [];
     for (let i = startPage; i <= Math.min(endPage, pages); i += 1) {

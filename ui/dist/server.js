@@ -22,7 +22,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "c5ec38e60944bc9b8d78";
+/******/ 	var hotCurrentHash = "39339823a1f288a3041f";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -2128,7 +2128,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const PAGE_SIZE = 5;
+const PAGE_COUNT = 5;
 
 function PageLink({
   params,
@@ -2422,10 +2422,10 @@ class IssueList extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
     const params = new url_search_params__WEBPACK_IMPORTED_MODULE_1___default.a(search);
     let page = parseInt(params.get('page'), 10);
     if (Number.isNaN(page)) page = 1;
-    const startPage = Math.floor((page - 1) / PAGE_SIZE) * PAGE_SIZE + 1;
-    const endPage = startPage + PAGE_SIZE - 1;
-    const prevSection = page === 1 ? 0 : startPage - PAGE_SIZE;
-    const nextSection = endPage >= pages ? 0 : startPage + PAGE_SIZE;
+    const startPage = Math.floor((page - 1) / PAGE_COUNT) * PAGE_COUNT + 1;
+    const endPage = startPage + PAGE_COUNT - 1;
+    const prevSection = page === 1 ? 0 : startPage - PAGE_COUNT;
+    const nextSection = endPage >= pages ? 0 : startPage + PAGE_COUNT;
     const items = [];
 
     for (let i = startPage; i <= Math.min(endPage, pages); i += 1) {
