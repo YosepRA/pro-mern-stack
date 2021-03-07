@@ -145,4 +145,21 @@ async function counts(_, { status, effortMin, effortMax }) {
   return Object.values(stats);
 }
 
-module.exports = { list, get, add, update, remove, counts };
+// Basically a reverse of "remove" resolver function.
+async function restore(_, { id }) {
+  const db = getDB();
+  const issue = await db.collection('deleted_issues').findOne({ id });
+  if (!issue) return false;
+
+  issue.deleted = new Date();
+
+  let result = await db.collection('issues').insertOne(issue);
+  if (result.insertedId) {
+    result = await db.collection('deleted_issues').removeOne({ id });
+    return result.deletedCount === 1;
+  }
+
+  return false;
+}
+
+module.exports = { list, get, add, update, remove, counts, restore };
