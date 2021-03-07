@@ -22,7 +22,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "4ae92dc36686799dbfb1";
+/******/ 	var hotCurrentHash = "c5ec38e60944bc9b8d78";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -2373,8 +2373,34 @@ class IssueList extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
         return {
           issues: prevState.issues.filter(issue => issue.id !== id)
         };
-      }, () => showSuccess(`Deleted issue ${id} successfully.`));
+      }, () => {
+        const undoMessage = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", null, `Deleted issue ${id} successfully.`, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["Button"], {
+          bsStyle: "link",
+          onClick: () => this.issueRestore(id)
+        }, "UNDO"));
+        showSuccess(undoMessage);
+      });
     } else {
+      this.loadData();
+    }
+  }
+
+  async issueRestore(id) {
+    const query = `
+      mutation issueRestore($id: Int!) {
+        issueRestore(id: $id)
+      }
+    `;
+    const {
+      showSuccess,
+      showError
+    } = this.props;
+    const data = await Object(_graphQLFetch_js__WEBPACK_IMPORTED_MODULE_7__["default"])(query, {
+      id
+    }, showError);
+
+    if (data) {
+      showSuccess(`Issue ${id} restored successfully.`);
       this.loadData();
     }
   }
