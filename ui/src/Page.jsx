@@ -14,6 +14,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 import Contents from './Contents.jsx';
 import IssueAddNavItem from './IssueAddNavItem.jsx';
 import Search from './Search.jsx';
+import SignInNavItem from './SignInNavItem.jsx';
 
 function NavBar() {
   return (
@@ -45,6 +46,8 @@ function NavBar() {
 
       <Nav pullRight>
         <IssueAddNavItem />
+
+        <SignInNavItem />
 
         <NavDropdown
           id="user-dropdown"
