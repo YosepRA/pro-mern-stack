@@ -10,8 +10,6 @@ SourceMapSupport.install();
 
 const app = express();
 const port = process.env.UI_SERVER_PORT || 8000;
-// const UI_API_ENDPOINT = process.env.UI_API_ENDPOINT || 'http://localhost:3000';
-// const env = { UI_API_ENDPOINT };
 const apiProxyTarget = process.env.API_PROXY_TARGET;
 
 // Webpack Hot Module Replacement configuration.
@@ -47,7 +45,10 @@ if (!process.env.UI_SERVER_API_ENDPOINT) {
 }
 
 app.get('/env.js', (req, res) => {
-  const env = { UI_API_ENDPOINT: process.env.UI_API_ENDPOINT };
+  const env = {
+    UI_API_ENDPOINT: process.env.UI_API_ENDPOINT,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+  };
 
   res.send(`window.ENV = ${JSON.stringify(env)}`);
 });

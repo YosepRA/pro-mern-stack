@@ -22,7 +22,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "4c3a360d552272f101c7";
+/******/ 	var hotCurrentHash = "22a6cab8aea118d9c20c";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1072,6 +1072,8 @@ function template(body, data) {
             cursor: pointer;
           }
         </style>
+
+        <script src="https://apis.google.com/js/api:client.js"></script>
       </head>
       <body>
         <div id="content">${body}</div>
@@ -1113,9 +1115,7 @@ __webpack_require__.r(__webpack_exports__);
 dotenv__WEBPACK_IMPORTED_MODULE_2___default.a.config();
 source_map_support__WEBPACK_IMPORTED_MODULE_3___default.a.install();
 const app = express__WEBPACK_IMPORTED_MODULE_0___default()();
-const port = process.env.UI_SERVER_PORT || 8000; // const UI_API_ENDPOINT = process.env.UI_API_ENDPOINT || 'http://localhost:3000';
-// const env = { UI_API_ENDPOINT };
-
+const port = process.env.UI_SERVER_PORT || 8000;
 const apiProxyTarget = process.env.API_PROXY_TARGET; // Webpack Hot Module Replacement configuration.
 
 const enableHMR = (process.env.ENABLE_HMR || 'true') === 'true';
@@ -1159,7 +1159,8 @@ if (!process.env.UI_SERVER_API_ENDPOINT) {
 
 app.get('/env.js', (req, res) => {
   const env = {
-    UI_API_ENDPOINT: process.env.UI_API_ENDPOINT
+    UI_API_ENDPOINT: process.env.UI_API_ENDPOINT,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID
   };
   res.send(`window.ENV = ${JSON.stringify(env)}`);
 });
@@ -3008,11 +3009,13 @@ class Search extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SignInNavItem; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-bootstrap */ "react-bootstrap");
 /* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _withToast_jsx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./withToast.jsx */ "./src/withToast.jsx");
+
+
 
 
 class SignInNavItem extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
@@ -3020,6 +3023,7 @@ class SignInNavItem extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     super();
     this.state = {
       showing: false,
+      disabled: false,
       user: {
         givenName: '',
         signedIn: false
@@ -3031,14 +3035,42 @@ class SignInNavItem extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     this.hideModal = this.hideModal.bind(this);
   }
 
-  signIn() {
-    this.hideModal();
-    this.setState({
-      user: {
-        givenName: 'User1',
-        signedIn: true
+  componentDidMount() {
+    const {
+      showError
+    } = this.props;
+    const clientId = window.ENV.GOOGLE_CLIENT_ID;
+    if (!clientId) return;
+    window.gapi.load('auth2', () => {
+      if (!window.gapi.auth2.getAuthInstance()) {
+        window.gapi.auth2.init({
+          client_id: clientId
+        }).then(() => this.setState({
+          disabled: false
+        })).catch(() => showError('Error on Google Auth initialization.'));
       }
     });
+  }
+
+  async signIn() {
+    this.hideModal();
+    const {
+      showError
+    } = this.props;
+
+    try {
+      const auth2 = window.gapi.auth2.getAuthInstance();
+      const googleUser = await auth2.signIn();
+      const givenName = googleUser.getBasicProfile().getGivenName();
+      this.setState({
+        user: {
+          signedIn: true,
+          givenName
+        }
+      });
+    } catch (error) {
+      showError(`Error authentication with Google: ${error.error}`);
+    }
   }
 
   signOut() {
@@ -3051,6 +3083,16 @@ class SignInNavItem extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   }
 
   showModal() {
+    const {
+      showError
+    } = this.props;
+    const clientId = window.ENV.GOOGLE_CLIENT_ID;
+
+    if (!clientId) {
+      showError('Missing environment variable GOOGLE_CLIENT_ID.');
+      return;
+    }
+
     this.setState({
       showing: true
     });
@@ -3065,6 +3107,7 @@ class SignInNavItem extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   render() {
     const {
       showing,
+      disabled,
       user: {
         givenName,
         signedIn
@@ -3092,14 +3135,20 @@ class SignInNavItem extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Title, null, "Sign in")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Body, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
       block: true,
       bsStyle: "primary",
+      disabled: disabled,
       onClick: this.signIn
-    }, "Sign in")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("img", {
+      src: "https://developers.google.com/identity/images/btn_google_signin_light_normal_web.png",
+      alt: "Sign in"
+    }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Modal"].Footer, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Button"], {
       bsStyle: "link",
       onClick: this.hideModal
     }, "Cancel"))));
   }
 
 }
+
+/* harmony default export */ __webpack_exports__["default"] = (Object(_withToast_jsx__WEBPACK_IMPORTED_MODULE_2__["default"])(SignInNavItem));
 
 /***/ }),
 

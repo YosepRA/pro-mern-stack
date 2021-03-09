@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import { NavItem, NavDropdown, MenuItem, Modal, Button } from 'react-bootstrap';
 
-export default class SignInNavItem extends Component {
+import withToast from './withToast.jsx';
+
+class SignInNavItem extends Component {
   constructor() {
     super();
     this.state = {
       showing: false,
+      disabled: false,
       user: { givenName: '', signedIn: false },
     };
 
@@ -15,9 +18,36 @@ export default class SignInNavItem extends Component {
     this.hideModal = this.hideModal.bind(this);
   }
 
-  signIn() {
+  componentDidMount() {
+    const { showError } = this.props;
+    const clientId = window.ENV.GOOGLE_CLIENT_ID;
+
+    if (!clientId) return;
+
+    window.gapi.load('auth2', () => {
+      if (!window.gapi.auth2.getAuthInstance()) {
+        window.gapi.auth2
+          .init({ client_id: clientId })
+          .then(() => this.setState({ disabled: false }))
+          .catch(() => showError('Error on Google Auth initialization.'));
+      }
+    });
+  }
+
+  async signIn() {
     this.hideModal();
-    this.setState({ user: { givenName: 'User1', signedIn: true } });
+
+    const { showError } = this.props;
+
+    try {
+      const auth2 = window.gapi.auth2.getAuthInstance();
+      const googleUser = await auth2.signIn();
+      const givenName = googleUser.getBasicProfile().getGivenName();
+
+      this.setState({ user: { signedIn: true, givenName } });
+    } catch (error) {
+      showError(`Error authentication with Google: ${error.error}`);
+    }
   }
 
   signOut() {
@@ -25,6 +55,14 @@ export default class SignInNavItem extends Component {
   }
 
   showModal() {
+    const { showError } = this.props;
+    const clientId = window.ENV.GOOGLE_CLIENT_ID;
+
+    if (!clientId) {
+      showError('Missing environment variable GOOGLE_CLIENT_ID.');
+      return;
+    }
+
     this.setState({ showing: true });
   }
 
@@ -35,6 +73,7 @@ export default class SignInNavItem extends Component {
   render() {
     const {
       showing,
+      disabled,
       user: { givenName, signedIn },
     } = this.state;
 
@@ -56,8 +95,16 @@ export default class SignInNavItem extends Component {
           </Modal.Header>
 
           <Modal.Body>
-            <Button block bsStyle="primary" onClick={this.signIn}>
-              Sign in
+            <Button
+              block
+              bsStyle="primary"
+              disabled={disabled}
+              onClick={this.signIn}
+            >
+              <img
+                src="https://developers.google.com/identity/images/btn_google_signin_light_normal_web.png"
+                alt="Sign in"
+              />
             </Button>
           </Modal.Body>
 
@@ -71,3 +118,5 @@ export default class SignInNavItem extends Component {
     );
   }
 }
+
+export default withToast(SignInNavItem);

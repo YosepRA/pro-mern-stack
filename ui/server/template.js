@@ -21,6 +21,8 @@ export default function template(body, data) {
             cursor: pointer;
           }
         </style>
+
+        <script src="https://apis.google.com/js/api:client.js"></script>
       </head>
       <body>
         <div id="content">${body}</div>
