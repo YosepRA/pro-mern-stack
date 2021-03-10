@@ -22,7 +22,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "22a6cab8aea118d9c20c";
+/******/ 	var hotCurrentHash = "15417d46f9df87f657e0";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1145,12 +1145,23 @@ if (enableHMR && "development" !== 'production') {
 }
 
 app.use(express__WEBPACK_IMPORTED_MODULE_0___default.a.static('./public'));
-if (apiProxyTarget) app.use('/graphql', http_proxy_middleware__WEBPACK_IMPORTED_MODULE_1___default()({
-  target: apiProxyTarget
-})); // API endpoint setup.
+
+if (apiProxyTarget) {
+  app.use('/graphql', http_proxy_middleware__WEBPACK_IMPORTED_MODULE_1___default()({
+    target: apiProxyTarget
+  }));
+  app.use('/auth', http_proxy_middleware__WEBPACK_IMPORTED_MODULE_1___default()({
+    target: apiProxyTarget
+  }));
+} // API endpoint setup.
+
 
 if (!process.env.UI_API_ENDPOINT) {
   process.env.UI_API_ENDPOINT = 'http://localhost:3000/graphql';
+}
+
+if (!process.env.UI_AUTH_ENDPOINT) {
+  process.env.UI_AUTH_ENDPOINT = 'http://localhost:3000/auth';
 }
 
 if (!process.env.UI_SERVER_API_ENDPOINT) {
@@ -1160,6 +1171,7 @@ if (!process.env.UI_SERVER_API_ENDPOINT) {
 app.get('/env.js', (req, res) => {
   const env = {
     UI_API_ENDPOINT: process.env.UI_API_ENDPOINT,
+    UI_AUTH_ENDPOINT: process.env.UI_AUTH_ENDPOINT,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID
   };
   res.send(`window.ENV = ${JSON.stringify(env)}`);
@@ -3057,19 +3069,41 @@ class SignInNavItem extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     const {
       showError
     } = this.props;
+    let googleToken;
 
     try {
       const auth2 = window.gapi.auth2.getAuthInstance();
       const googleUser = await auth2.signIn();
-      const givenName = googleUser.getBasicProfile().getGivenName();
+      googleToken = googleUser.getAuthResponse().id_token;
+    } catch (error) {
+      showError(`Error authentication with Google: ${error.error}`);
+    }
+
+    try {
+      const apiEndPoint = window.ENV.UI_AUTH_ENDPOINT;
+      const response = await fetch(`${apiEndPoint}/signin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          google_token: googleToken
+        })
+      });
+      const body = await response.text();
+      const result = JSON.parse(body);
+      const {
+        signedIn,
+        givenName
+      } = result;
       this.setState({
         user: {
-          signedIn: true,
+          signedIn,
           givenName
         }
       });
     } catch (error) {
-      showError(`Error authentication with Google: ${error.error}`);
+      showError(`Error signing into the app: ${error}`);
     }
   }
 
