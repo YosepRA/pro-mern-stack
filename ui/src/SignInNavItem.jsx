@@ -18,7 +18,7 @@ class SignInNavItem extends Component {
     this.hideModal = this.hideModal.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { showError } = this.props;
     const clientId = window.ENV.GOOGLE_CLIENT_ID;
 
@@ -32,6 +32,20 @@ class SignInNavItem extends Component {
           .catch(() => showError('Error on Google Auth initialization.'));
       }
     });
+
+    await this.loadData();
+  }
+
+  async loadData() {
+    const apiEndPoint = window.ENV.UI_AUTH_ENDPOINT;
+    const response = await fetch(`${apiEndPoint}/user`, {
+      method: 'POST',
+    });
+    const body = await response.text();
+    const result = JSON.parse(body);
+    const { signedIn, givenName } = result;
+
+    this.setState({ user: { signedIn, givenName } });
   }
 
   async signIn() {

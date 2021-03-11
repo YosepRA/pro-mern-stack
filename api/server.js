@@ -1,15 +1,16 @@
 require('dotenv').config();
 const express = require('express');
+const cookieParser = require('cookie-parser');
 
 const { installHandler } = require('./api_handler');
 const { connectToDB } = require('./db');
 const auth = require('./auth');
 
 const app = express();
-
-app.use('/auth', auth.routes);
-
 const port = process.env.API_SERVER_PORT || 3000;
+
+app.use(cookieParser());
+app.use('/auth', auth.routes);
 
 // GraphQL init.
 installHandler(app);

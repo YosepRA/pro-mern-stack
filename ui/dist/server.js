@@ -22,7 +22,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "15417d46f9df87f657e0";
+/******/ 	var hotCurrentHash = "b72bad2e9f73248b9b97";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -3047,7 +3047,7 @@ class SignInNavItem extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     this.hideModal = this.hideModal.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const {
       showError
     } = this.props;
@@ -3060,6 +3060,26 @@ class SignInNavItem extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
         }).then(() => this.setState({
           disabled: false
         })).catch(() => showError('Error on Google Auth initialization.'));
+      }
+    });
+    await this.loadData();
+  }
+
+  async loadData() {
+    const apiEndPoint = window.ENV.UI_AUTH_ENDPOINT;
+    const response = await fetch(`${apiEndPoint}/user`, {
+      method: 'POST'
+    });
+    const body = await response.text();
+    const result = JSON.parse(body);
+    const {
+      signedIn,
+      givenName
+    } = result;
+    this.setState({
+      user: {
+        signedIn,
+        givenName
       }
     });
   }
