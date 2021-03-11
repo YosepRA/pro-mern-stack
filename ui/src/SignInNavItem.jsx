@@ -79,8 +79,19 @@ class SignInNavItem extends Component {
     }
   }
 
-  signOut() {
-    this.setState({ user: { givenName: '', signedIn: false } });
+  async signOut() {
+    const apiEndPoint = window.ENV.UI_AUTH_ENDPOINT;
+    const { showError } = this.props;
+
+    try {
+      await fetch(`${apiEndPoint}/signout`, { method: 'POST' });
+      const auth2 = window.gapi.auth2.getAuthInstance();
+      await auth2.signOut();
+
+      this.setState({ user: { givenName: '', signedIn: false } });
+    } catch (error) {
+      showError(`Error signing out: ${error}`);
+    }
   }
 
   showModal() {
