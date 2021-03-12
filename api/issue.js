@@ -1,6 +1,7 @@
 const { UserInputError } = require('apollo-server-express');
 
 const { getDB, getNextSequence } = require('./db');
+const { mustSignedIn } = require('./auth');
 
 const PAGE_SIZE = 10;
 
@@ -164,4 +165,12 @@ async function restore(_, { id }) {
   return false;
 }
 
-module.exports = { list, get, add, update, remove, counts, restore };
+module.exports = {
+  list,
+  get,
+  add: mustSignedIn(add),
+  update: mustSignedIn(update),
+  remove: mustSignedIn(remove),
+  counts,
+  restore: mustSignedIn(restore),
+};
