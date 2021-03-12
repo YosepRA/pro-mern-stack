@@ -8,8 +8,7 @@ class SignInNavItem extends Component {
     super();
     this.state = {
       showing: false,
-      disabled: false,
-      user: { givenName: '', signedIn: false },
+      disabled: true,
     };
 
     this.signIn = this.signIn.bind(this);
@@ -32,26 +31,12 @@ class SignInNavItem extends Component {
           .catch(() => showError('Error on Google Auth initialization.'));
       }
     });
-
-    await this.loadData();
-  }
-
-  async loadData() {
-    const apiEndPoint = window.ENV.UI_AUTH_ENDPOINT;
-    const response = await fetch(`${apiEndPoint}/user`, {
-      method: 'POST',
-    });
-    const body = await response.text();
-    const result = JSON.parse(body);
-    const { signedIn, givenName } = result;
-
-    this.setState({ user: { signedIn, givenName } });
   }
 
   async signIn() {
     this.hideModal();
 
-    const { showError } = this.props;
+    const { showError, onUserChange } = this.props;
     let googleToken;
 
     try {
@@ -73,7 +58,7 @@ class SignInNavItem extends Component {
       const result = JSON.parse(body);
       const { signedIn, givenName } = result;
 
-      this.setState({ user: { signedIn, givenName } });
+      onUserChange({ signedIn, givenName });
     } catch (error) {
       showError(`Error signing into the app: ${error}`);
     }
@@ -81,14 +66,14 @@ class SignInNavItem extends Component {
 
   async signOut() {
     const apiEndPoint = window.ENV.UI_AUTH_ENDPOINT;
-    const { showError } = this.props;
+    const { showError, onUserChange } = this.props;
 
     try {
       await fetch(`${apiEndPoint}/signout`, { method: 'POST' });
       const auth2 = window.gapi.auth2.getAuthInstance();
       await auth2.signOut();
 
-      this.setState({ user: { givenName: '', signedIn: false } });
+      onUserChange({ signedIn: false, givenName: '' });
     } catch (error) {
       showError(`Error signing out: ${error}`);
     }
@@ -111,11 +96,10 @@ class SignInNavItem extends Component {
   }
 
   render() {
+    const { showing, disabled } = this.state;
     const {
-      showing,
-      disabled,
       user: { givenName, signedIn },
-    } = this.state;
+    } = this.props;
 
     if (signedIn) {
       return (

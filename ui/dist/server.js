@@ -22,7 +22,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "a6279681a367dec68301";
+/******/ 	var hotCurrentHash = "67c3474e5045d5fbd4cd";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1471,8 +1471,14 @@ class IssueAddNavItem extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     const {
       showing
     } = this.state;
+    const {
+      user: {
+        signedIn
+      }
+    } = this.props;
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["NavItem"], {
-      onClick: this.showModal
+      onClick: this.showModal,
+      disabled: !signedIn
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["OverlayTrigger"], {
       delayShow: 1000,
       placement: "left",
@@ -2887,7 +2893,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-function NavBar() {
+function NavBar({
+  user,
+  onUserChange
+}) {
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Navbar"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Navbar"].Header, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Navbar"].Brand, null, "Issue Tracker")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Nav"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_bootstrap__WEBPACK_IMPORTED_MODULE_2__["LinkContainer"], {
     exact: true,
     to: "/"
@@ -2901,7 +2910,12 @@ function NavBar() {
     sm: 5
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Navbar"].Form, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Search_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], null))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Nav"], {
     pullRight: true
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_IssueAddNavItem_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_SignInNavItem_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["NavDropdown"], {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_IssueAddNavItem_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
+    user: user
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_SignInNavItem_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], {
+    user: user,
+    onUserChange: onUserChange
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["NavDropdown"], {
     id: "user-dropdown",
     title: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Glyphicon"], {
       glyph: "option-vertical"
@@ -2918,10 +2932,55 @@ function Footer() {
   }, "GitHub repository.")));
 }
 
-function Page() {
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(NavBar, null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Grid"], {
-    fluid: true
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Contents_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Footer, null));
+class Page extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
+  constructor() {
+    super();
+    this.state = {
+      user: {
+        signedIn: false,
+        givenName: ''
+      }
+    };
+    this.onUserChange = this.onUserChange.bind(this);
+  }
+
+  async componentDidMount() {
+    const apiEndPoint = window.ENV.UI_AUTH_ENDPOINT;
+    const response = await fetch(`${apiEndPoint}/user`, {
+      method: 'POST'
+    });
+    const body = await response.text();
+    const result = JSON.parse(body);
+    const {
+      signedIn,
+      givenName
+    } = result;
+    this.setState({
+      user: {
+        signedIn,
+        givenName
+      }
+    });
+  }
+
+  onUserChange(user) {
+    this.setState({
+      user
+    });
+  }
+
+  render() {
+    const {
+      user
+    } = this.state;
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(NavBar, {
+      user: user,
+      onUserChange: this.onUserChange
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Grid"], {
+      fluid: true
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Contents_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Footer, null));
+  }
+
 }
 
 /***/ }),
@@ -3035,11 +3094,7 @@ class SignInNavItem extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     super();
     this.state = {
       showing: false,
-      disabled: false,
-      user: {
-        givenName: '',
-        signedIn: false
-      }
+      disabled: true
     };
     this.signIn = this.signIn.bind(this);
     this.signOut = this.signOut.bind(this);
@@ -3062,32 +3117,13 @@ class SignInNavItem extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
         })).catch(() => showError('Error on Google Auth initialization.'));
       }
     });
-    await this.loadData();
-  }
-
-  async loadData() {
-    const apiEndPoint = window.ENV.UI_AUTH_ENDPOINT;
-    const response = await fetch(`${apiEndPoint}/user`, {
-      method: 'POST'
-    });
-    const body = await response.text();
-    const result = JSON.parse(body);
-    const {
-      signedIn,
-      givenName
-    } = result;
-    this.setState({
-      user: {
-        signedIn,
-        givenName
-      }
-    });
   }
 
   async signIn() {
     this.hideModal();
     const {
-      showError
+      showError,
+      onUserChange
     } = this.props;
     let googleToken;
 
@@ -3116,11 +3152,9 @@ class SignInNavItem extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
         signedIn,
         givenName
       } = result;
-      this.setState({
-        user: {
-          signedIn,
-          givenName
-        }
+      onUserChange({
+        signedIn,
+        givenName
       });
     } catch (error) {
       showError(`Error signing into the app: ${error}`);
@@ -3130,7 +3164,8 @@ class SignInNavItem extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   async signOut() {
     const apiEndPoint = window.ENV.UI_AUTH_ENDPOINT;
     const {
-      showError
+      showError,
+      onUserChange
     } = this.props;
 
     try {
@@ -3139,11 +3174,9 @@ class SignInNavItem extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
       });
       const auth2 = window.gapi.auth2.getAuthInstance();
       await auth2.signOut();
-      this.setState({
-        user: {
-          givenName: '',
-          signedIn: false
-        }
+      onUserChange({
+        signedIn: false,
+        givenName: ''
       });
     } catch (error) {
       showError(`Error signing out: ${error}`);
@@ -3175,12 +3208,14 @@ class SignInNavItem extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
   render() {
     const {
       showing,
-      disabled,
+      disabled
+    } = this.state;
+    const {
       user: {
         givenName,
         signedIn
       }
-    } = this.state;
+    } = this.props;
 
     if (signedIn) {
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["NavDropdown"], {

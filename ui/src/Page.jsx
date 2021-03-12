@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   Navbar,
   Nav,
@@ -16,7 +16,7 @@ import IssueAddNavItem from './IssueAddNavItem.jsx';
 import Search from './Search.jsx';
 import SignInNavItem from './SignInNavItem.jsx';
 
-function NavBar() {
+function NavBar({ user, onUserChange }) {
   return (
     <Navbar>
       <Navbar.Header>
@@ -45,9 +45,9 @@ function NavBar() {
       </Col>
 
       <Nav pullRight>
-        <IssueAddNavItem />
+        <IssueAddNavItem user={user} />
 
-        <SignInNavItem />
+        <SignInNavItem user={user} onUserChange={onUserChange} />
 
         <NavDropdown
           id="user-dropdown"
@@ -75,14 +75,41 @@ function Footer() {
   );
 }
 
-export default function Page() {
-  return (
-    <div>
-      <NavBar />
-      <Grid fluid>
-        <Contents />
-      </Grid>
-      <Footer />
-    </div>
-  );
+export default class Page extends Component {
+  constructor() {
+    super();
+    this.state = { user: { signedIn: false, givenName: '' } };
+
+    this.onUserChange = this.onUserChange.bind(this);
+  }
+
+  async componentDidMount() {
+    const apiEndPoint = window.ENV.UI_AUTH_ENDPOINT;
+    const response = await fetch(`${apiEndPoint}/user`, {
+      method: 'POST',
+    });
+    const body = await response.text();
+    const result = JSON.parse(body);
+    const { signedIn, givenName } = result;
+
+    this.setState({ user: { signedIn, givenName } });
+  }
+
+  onUserChange(user) {
+    this.setState({ user });
+  }
+
+  render() {
+    const { user } = this.state;
+
+    return (
+      <div>
+        <NavBar user={user} onUserChange={this.onUserChange} />
+        <Grid fluid>
+          <Contents />
+        </Grid>
+        <Footer />
+      </div>
+    );
+  }
 }
