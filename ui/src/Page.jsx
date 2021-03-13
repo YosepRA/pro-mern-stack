@@ -15,6 +15,7 @@ import Contents from './Contents.jsx';
 import IssueAddNavItem from './IssueAddNavItem.jsx';
 import Search from './Search.jsx';
 import SignInNavItem from './SignInNavItem.jsx';
+import UserContext from './UserContext.js';
 
 function NavBar({ user, onUserChange }) {
   return (
@@ -75,7 +76,7 @@ function Footer() {
   );
 }
 
-export default class Page extends Component {
+class Page extends Component {
   constructor() {
     super();
     this.state = { user: { signedIn: false, givenName: '' } };
@@ -106,10 +107,14 @@ export default class Page extends Component {
       <div>
         <NavBar user={user} onUserChange={this.onUserChange} />
         <Grid fluid>
-          <Contents />
+          <UserContext.Provider value={user}>
+            <Contents />
+          </UserContext.Provider>
         </Grid>
         <Footer />
       </div>
     );
   }
 }
+
+export default Page;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import {
   Button,
@@ -9,8 +9,21 @@ import {
 } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 
-const IssueRow = withRouter(
-  ({ issue, location: { search }, index, closeIssue, deleteIssue }) => {
+import UserContext from './UserContext.js';
+
+// eslint-disable-next-line react/prefer-stateless-function
+class IssueRowPlain extends Component {
+  render() {
+    const {
+      issue,
+      location: { search },
+      index,
+      closeIssue,
+      deleteIssue,
+    } = this.props;
+    const { signedIn } = this.context;
+    const disabled = !signedIn;
+
     const selectLocation = {
       pathname: `/issues/${issue.id}`,
       search,
@@ -56,7 +69,7 @@ const IssueRow = withRouter(
             overlay={closeTooltip}
             placement="top"
           >
-            <Button bsSize="xsmall" onClick={onClose}>
+            <Button bsSize="xsmall" onClick={onClose} disabled={disabled}>
               <Glyphicon glyph="remove" />
             </Button>
           </OverlayTrigger>
@@ -66,7 +79,7 @@ const IssueRow = withRouter(
             overlay={deleteTooltip}
             placement="top"
           >
-            <Button bsSize="xsmall" onClick={onDelete}>
+            <Button bsSize="xsmall" onClick={onDelete} disabled={disabled}>
               <Glyphicon glyph="trash" />
             </Button>
           </OverlayTrigger>
@@ -76,7 +89,11 @@ const IssueRow = withRouter(
 
     return <LinkContainer to={selectLocation}>{tableRow}</LinkContainer>;
   }
-);
+}
+
+IssueRowPlain.contextType = UserContext;
+const IssueRow = withRouter(IssueRowPlain);
+delete IssueRow.contextType;
 
 export default function IssueTable({ issues, closeIssue, deleteIssue }) {
   const issueRows = issues.map((issue, index) => (
