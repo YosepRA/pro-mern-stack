@@ -3,8 +3,10 @@ const bodyParser = require('body-parser');
 const { OAuth2Client } = require('google-auth-library');
 const jwt = require('jsonwebtoken');
 const { AuthenticationError } = require('apollo-server-express');
+const cors = require('cors');
 
 const routes = new Router();
+const origin = process.env.UI_SERVER_ORIGIN || 'http://localhost:8000';
 let { JWT_SECRET } = process.env;
 
 if (!JWT_SECRET) {
@@ -16,7 +18,12 @@ if (!JWT_SECRET) {
   }
 }
 
+// ===== Middlewares =====
+
 routes.use(bodyParser.json());
+routes.use(cors({ origin, credentials: true }));
+
+// ===== Helpers =====
 
 // Get user based on JWT payload.
 function getUser(req) {
@@ -39,6 +46,8 @@ function mustSignedIn(resolver) {
     return resolver(root, args, { user });
   };
 }
+
+// ===== Routes =====
 
 routes.post('/signin', async (req, res) => {
   if (!JWT_SECRET) {

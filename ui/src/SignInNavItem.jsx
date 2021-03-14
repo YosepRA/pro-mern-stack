@@ -51,6 +51,7 @@ class SignInNavItem extends Component {
       const apiEndPoint = window.ENV.UI_AUTH_ENDPOINT;
       const response = await fetch(`${apiEndPoint}/signin`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ google_token: googleToken }),
       });
@@ -69,7 +70,10 @@ class SignInNavItem extends Component {
     const { showError, onUserChange } = this.props;
 
     try {
-      await fetch(`${apiEndPoint}/signout`, { method: 'POST' });
+      await fetch(`${apiEndPoint}/signout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
       const auth2 = window.gapi.auth2.getAuthInstance();
       await auth2.signOut();
 
