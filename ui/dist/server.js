@@ -22,7 +22,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "d4aace73c936555c213c";
+/******/ 	var hotCurrentHash = "ecfdbfad535391cb0512";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -1017,10 +1017,12 @@ async function render(req, res) {
     const match = Object(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["matchPath"])(req.path, activeRoute);
     const index = req.url.indexOf('?');
     const search = index !== -1 ? req.url.substring(index) : null;
-    initialData = await activeRoute.component.fetchData(match, search);
+    initialData = await activeRoute.component.fetchData(match, search, null, req.headers.cookie);
   }
 
+  const userData = await _src_Page_jsx__WEBPACK_IMPORTED_MODULE_3__["default"].fetchData(req.headers.cookie);
   _src_store_js__WEBPACK_IMPORTED_MODULE_5__["default"].initialData = initialData;
+  _src_store_js__WEBPACK_IMPORTED_MODULE_5__["default"].userData = userData;
   const element = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["StaticRouter"], {
     location: req.url,
     context: context
@@ -1030,7 +1032,7 @@ async function render(req, res) {
   if (context.url) {
     res.redirect(301, context.url);
   } else {
-    res.send(Object(_template_js__WEBPACK_IMPORTED_MODULE_4__["default"])(body, initialData));
+    res.send(Object(_template_js__WEBPACK_IMPORTED_MODULE_4__["default"])(body, initialData, userData));
   }
 }
 
@@ -1051,7 +1053,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var serialize_javascript__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! serialize-javascript */ "serialize-javascript");
 /* harmony import */ var serialize_javascript__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(serialize_javascript__WEBPACK_IMPORTED_MODULE_0__);
 
-function template(body, data) {
+function template(body, initialData, userData) {
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -1078,7 +1080,10 @@ function template(body, data) {
       <body>
         <div id="content">${body}</div>
 
-        <script>window.__INITIAL_DATA__ = ${serialize_javascript__WEBPACK_IMPORTED_MODULE_0___default()(data)}</script>
+        <script>
+          window.__INITIAL_DATA__ = ${serialize_javascript__WEBPACK_IMPORTED_MODULE_0___default()(initialData)};
+          window.__USER_DATA__ = ${serialize_javascript__WEBPACK_IMPORTED_MODULE_0___default()(userData)};
+        </script>
         <script src="/env.js"></script>
         <script src="/vendor.bundle.js"></script>
         <script src="/app.bundle.js"></script>
@@ -2905,10 +2910,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_router_bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-router-bootstrap */ "react-router-bootstrap");
 /* harmony import */ var react_router_bootstrap__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_router_bootstrap__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _Contents_jsx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Contents.jsx */ "./src/Contents.jsx");
-/* harmony import */ var _IssueAddNavItem_jsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./IssueAddNavItem.jsx */ "./src/IssueAddNavItem.jsx");
-/* harmony import */ var _Search_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Search.jsx */ "./src/Search.jsx");
-/* harmony import */ var _SignInNavItem_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./SignInNavItem.jsx */ "./src/SignInNavItem.jsx");
-/* harmony import */ var _UserContext_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./UserContext.js */ "./src/UserContext.js");
+/* harmony import */ var _graphQLFetch_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./graphQLFetch.js */ "./src/graphQLFetch.js");
+/* harmony import */ var _IssueAddNavItem_jsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./IssueAddNavItem.jsx */ "./src/IssueAddNavItem.jsx");
+/* harmony import */ var _Search_jsx__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Search.jsx */ "./src/Search.jsx");
+/* harmony import */ var _SignInNavItem_jsx__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./SignInNavItem.jsx */ "./src/SignInNavItem.jsx");
+/* harmony import */ var _UserContext_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./UserContext.js */ "./src/UserContext.js");
+/* harmony import */ var _store_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./store.js */ "./src/store.js");
+
+
 
 
 
@@ -2933,11 +2942,11 @@ function NavBar({
     to: "/about"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["NavItem"], null, "About"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Col"], {
     sm: 5
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Navbar"].Form, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Search_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], null))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Nav"], {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Navbar"].Form, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Search_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], null))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Nav"], {
     pullRight: true
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_IssueAddNavItem_jsx__WEBPACK_IMPORTED_MODULE_4__["default"], {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_IssueAddNavItem_jsx__WEBPACK_IMPORTED_MODULE_5__["default"], {
     user: user
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_SignInNavItem_jsx__WEBPACK_IMPORTED_MODULE_6__["default"], {
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_SignInNavItem_jsx__WEBPACK_IMPORTED_MODULE_7__["default"], {
     user: user,
     onUserChange: onUserChange
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["NavDropdown"], {
@@ -2958,35 +2967,38 @@ function Footer() {
 }
 
 class Page extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
+  static async fetchData(cookie) {
+    const query = `query {
+      user {
+        signedIn
+        givenName
+      }
+    }`;
+    const data = await Object(_graphQLFetch_js__WEBPACK_IMPORTED_MODULE_4__["default"])(query, null, null, cookie);
+    return data;
+  }
+
   constructor() {
     super();
+    const user = _store_js__WEBPACK_IMPORTED_MODULE_9__["default"].userData ? _store_js__WEBPACK_IMPORTED_MODULE_9__["default"].userData.user : null;
+    delete _store_js__WEBPACK_IMPORTED_MODULE_9__["default"].userData;
     this.state = {
-      user: {
-        signedIn: false,
-        givenName: ''
-      }
+      user
     };
     this.onUserChange = this.onUserChange.bind(this);
   }
 
   async componentDidMount() {
-    const apiEndPoint = window.ENV.UI_AUTH_ENDPOINT;
-    const response = await fetch(`${apiEndPoint}/user`, {
-      method: 'POST',
-      credentials: 'include'
-    });
-    const body = await response.text();
-    const result = JSON.parse(body);
     const {
-      signedIn,
-      givenName
-    } = result;
-    this.setState({
-      user: {
-        signedIn,
-        givenName
-      }
-    });
+      user
+    } = this.state;
+
+    if (user == null) {
+      const data = await Page.fetchData();
+      this.setState({
+        user: data.user
+      });
+    }
   }
 
   onUserChange(user) {
@@ -2999,12 +3011,13 @@ class Page extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     const {
       user
     } = this.state;
+    if (user == null) return null;
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(NavBar, {
       user: user,
       onUserChange: this.onUserChange
     }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_bootstrap__WEBPACK_IMPORTED_MODULE_1__["Grid"], {
       fluid: true
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_UserContext_js__WEBPACK_IMPORTED_MODULE_7__["default"].Provider, {
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_UserContext_js__WEBPACK_IMPORTED_MODULE_8__["default"].Provider, {
       value: user
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Contents_jsx__WEBPACK_IMPORTED_MODULE_3__["default"], null))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Footer, null));
   }
@@ -3458,17 +3471,19 @@ function jsonDateReviver(key, value) {
   return value;
 }
 
-async function graphQLFetch(query, variables = {}, showError = null) {
+async function graphQLFetch(query, variables = {}, showError = null, cookie = null) {
   // eslint-disable-next-line no-undef
   const apiEndpoint =  false ? undefined : process.env.UI_SERVER_API_ENDPOINT;
 
   try {
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    if (cookie) headers.Cookie = cookie;
     const response = await isomorphic_fetch__WEBPACK_IMPORTED_MODULE_0___default()(apiEndpoint, {
       method: 'POST',
       credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers,
       body: JSON.stringify({
         query,
         variables

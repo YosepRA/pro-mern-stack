@@ -47,6 +47,10 @@ function mustSignedIn(resolver) {
   };
 }
 
+function resolveUser(_, args, { user }) {
+  return user;
+}
+
 // ===== Routes =====
 
 routes.post('/signin', async (req, res) => {
@@ -92,4 +96,4 @@ routes.post('/user', (req, res) => {
   res.send(getUser(req));
 });
 
-module.exports = { routes, getUser, mustSignedIn };
+module.exports = { routes, getUser, mustSignedIn, resolveUser };

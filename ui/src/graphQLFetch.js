@@ -10,7 +10,8 @@ function jsonDateReviver(key, value) {
 export default async function graphQLFetch(
   query,
   variables = {},
-  showError = null
+  showError = null,
+  cookie = null
 ) {
   // eslint-disable-next-line no-undef
   const apiEndpoint = __isBrowser__
@@ -18,10 +19,12 @@ export default async function graphQLFetch(
     : process.env.UI_SERVER_API_ENDPOINT;
 
   try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (cookie) headers.Cookie = cookie;
     const response = await fetch(apiEndpoint, {
       method: 'POST',
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ query, variables }),
     });
     const body = await response.text();
